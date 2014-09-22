@@ -177,8 +177,12 @@
 
       function saveData(data,callback) {
         var idInput = document.getElementById('node-id');
-        var labelInput = document.getElementById('node-label');
-        var div = document.getElementById('network-popUp');
+        var labelInput = document.getElementById('node-label');;
+        data.id = idInput.value;
+
+        var div = document.getElementById('network-popUp');;
+        data.id = idInput.value;
+
         data.id = idInput.value;
         data.label = labelInput.value;
         clearPopUp();
