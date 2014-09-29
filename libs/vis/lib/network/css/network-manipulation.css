@@ -12,7 +12,7 @@ div.network-manipulationDiv {
     background: linear-gradient(to bottom,  #ffffff 0%,#fcfcfc 48%,#fafafa 50%,#fcfcfc 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#fcfcfc',GradientType=0 ); /* IE6-9 */
 
-    width: 600px;
+    width: 1000px;
     height:30px;
     z-index:10;
     position:absolute;
@@ -31,7 +31,7 @@ div.network-manipulation-closeDiv {
     z-index:11;
     position:absolute;
     margin-top:3px;
-    margin-left:590px;
+    margin-left:990px;
     background-position: 0px 0px;
     background-repeat:no-repeat;
     background-image: url("img/network/cross.png");

@@ -3,7 +3,7 @@ body {
 }
 #mynetwork {
   position:relative;
-  width: 600px;
+  width: 1000px;
   height: 600px;
   border: 1px solid lightgray;
 }
@@ -30,7 +30,7 @@ div.table_description {
 #operation {
   font-size:28px;
 }
-#network-popUp {
+#edit-popUp {
   display:none;
   position:absolute;
   top:350px;
@@ -45,3 +45,30 @@ div.table_description {
   padding:10px;
   text-align: center;
 }
+
+#map-popUp {
+  display:none;
+  position:absolute;
+  top:350px;
+  left:170px;
+  z-index:299;
+  width:250px;
+  height:120px;
+  background-color: #f9f9f9;
+  border-style:solid;
+  border-width:3px;
+  border-color: #5394ed;
+  padding:10px;
+  text-align: center;
+}
+
+span.network-manipulationUI.save {
+    background-image: url("../libs/vis/dist/img/network/save.png");
+	width: 24px;
+}
+
+span.network-manipulationUI.load {
+    background-image: url("../libs/vis/dist/img/network/openfile.png");
+	width: 24px;
+}
+

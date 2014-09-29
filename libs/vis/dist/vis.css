@@ -543,7 +543,7 @@ div.network-manipulation-closeDiv {
     z-index:11;
     position:absolute;
     margin-top:3px;
-    margin-left:590px;
+    margin-left:990px;
     background-position: 0px 0px;
     background-repeat:no-repeat;
     background-image: url("img/network/cross.png");
@@ -562,13 +562,13 @@ span.network-manipulationUI {
     -moz-border-radius: 15px;
     border-radius: 15px;
     display:inline-block;
-    background-position: 0px 0px;
+    background-position: center;
     background-repeat:no-repeat;
     height:24px;
     margin: -14px 0px 0px 10px;
     vertical-align:middle;
     cursor: pointer;
-    padding: 0px 8px 0px 8px;
+    padding: 0px 2px 0px 2px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -587,6 +587,7 @@ span.network-manipulationUI:active {
 
 span.network-manipulationUI.back {
     background-image: url("img/network/backIcon.png");
+	width: 24px;
 }
 
 span.network-manipulationUI.none:hover {
@@ -606,10 +607,12 @@ span.network-manipulationUI.notification{
 
 span.network-manipulationUI.add {
     background-image: url("img/network/addNodeIcon.png");
+	width: 24px;
 }
 
 span.network-manipulationUI.edit {
     background-image: url("img/network/editIcon.png");
+	width: 24px;
 }
 
 span.network-manipulationUI.edit.editmode {
@@ -621,10 +624,12 @@ span.network-manipulationUI.edit.editmode {
 
 span.network-manipulationUI.connect {
     background-image: url("img/network/connectIcon.png");
+	width: 24px;
 }
 
 span.network-manipulationUI.delete {
     background-image: url("img/network/deleteIcon.png");
+	width: 24px;
 }
 /* top right bottom left */
 span.network-manipulationLabel {
