@@ -10,7 +10,7 @@ app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
 
 // Try to load any saved mind map
-var rawData = fs.readFileSync("data.json", {encoding: "utf8"});
+var rawData = fs.readFileSync("data.json", {encoding: "utf-8"});
 var data = {};
 try {
 	data = JSON.parse(rawData);
