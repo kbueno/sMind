@@ -65,6 +65,12 @@ function draw(data) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
   });
 
+  var searchDiv = document.createElement('div');
+  searchDiv.className = "searchDiv";
+  searchDiv.id = "searchDiv";
+  network.containerElement.insertBefore(searchDiv,network.frame);
+ 
+  /*
   var submitButtom = document.getElementById('submitButton');
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
@@ -79,7 +85,7 @@ function draw(data) {
 	  }
 	})
   })
-
+  */
 
 };
 
@@ -88,6 +94,29 @@ function draw(data) {
 /*                        SEARCH FUNCTIONS                           */
 /*********************************************************************/
 
+function loadSearchSystem() {
+
+	/*
+	var form = document.createElement('form');
+	form.id = "searchForm";
+
+	var input = document.createElement
+	  <form id="searchForm" action="" method="">
+		<input type="hidden" name="wt" value="json">
+		<table>
+	    <tr>
+		<td>search</td>
+		<td><input type="text" id="search-id" name="q" value=""></td>
+		<td><button id="submitButton">Submit</button></td>
+	    </tr>
+	  </table>
+
+	  </form>
+	
+	  <div id="searchResult"></div>
+	  */
+
+}
 
 function displayResults(result) {
 	var data = result.response;
