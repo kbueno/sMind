@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <title>sMind Popup</title>
+	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
+	<script>
+		// Wraping everything in a functions makes sure
+		// that the HTML gets generated before running this
+		$(function() {
+			// Get data from server
+			$.ajax({
+				type: "GET",
+				url: "data",
+				contentType: "application/json",
+				dataType: "json",
+				success: function (data) {
+					displayMaps(data)
+				}
+			 })
+
+			// Display table of map names
+			function displayMaps(data) {
+				var entry = Object.keys(data)
+				
+				var html = "";
+				for (var i = 0; i < entry.length; i++) {
+					html += "<tr><td data-entryID='"+entry[i]+"'>" +entry[i]+"</td></tr>"
+				}
+				//html += "</tr>"
+
+				document.getElementById('mapTable').innerHTML = html;	
+				document.getElementById('load-save-mapButton').value = window.name
+					
+				$('td').on('click', function(e) {
+					document.getElementById('mapID').value = e.target.getAttribute('data-entryID');
+				})
+				
+				// When load button is clicked, send data to parent window
+				$('#load-save-mapButton').on('click', function() {
+					var id = document.getElementById('mapID');
+					var msg
+					if (window.name == 'load') {	
+						if (data[id.value] == undefined) {
+							alert("That file does not exist.")
+							return
+						}
+						msg = data[id.value]
+					}
+					else {
+						if (data[id.value] != undefined) {
+							var res = confirm("Are you sure you want to overwrite this file?")
+							if (!res) {
+								return
+							}
+						}
+						msg = {"id":id.value}	
+					}
+					msg.name = window.name
+					opener.postMessage(msg, "*")
+					window.close();
+				})
+			}
+
+			$('#cancel-mapButton').on('click', function() {
+				window.close()	
+			})
+		})
+	</script>
+
+
+  </head>
+
+  <body>
+	<h1><img src="css/img/sMind.png" alt="sMind" style="width:188px; height=56px;"></h1>
+	<table id="mapTable"></table>	
+	<input id='mapID' value=''>
+	<input type='button' value='load' id='load-save-mapButton'></button>
+	<input type='button' value='cancel' id='cancel-mapButton'></button>
+  </body>
+</html>

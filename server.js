@@ -23,8 +23,27 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');	
 });
 
+// popupbasic
+app.get('/popupbasic.html', function(req, res) {
+	res.sendFile(__dirname + '/popupbasic.html');
+});
+
 // Get data from the client
-app.post('/data', function(req, res) {
+app.get('/solr', function(req, res) {
+	
+	res.send(200,data);
+	//res.status(status).send(body);
+});
+
+// Get data from the client
+app.get('/data', function(req, res) {
+
+	res.send(200,data);
+	//res.status(status).send(body);
+});
+
+// Get data from the client
+app.post('/data/save', function(req, res) {
 	console.log(req.body);
 	// Create a unique ID and store in data
 	var id = req.body["name"]
@@ -32,10 +51,11 @@ app.post('/data', function(req, res) {
 
 	// Send response with ID
 	res.send(200,{"id": id});
+	//res.status(status).send(body);
 });
 
 // Send data to the client
-app.get('/data/:id', function(req, res) {
+app.get('/data/load/:id', function(req, res) {
 	// Check if file exists
 	if (data[req.params.id] != undefined) {
 		res.send(200, data[req.params.id]);

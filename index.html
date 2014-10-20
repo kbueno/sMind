@@ -4,17 +4,76 @@
   <head>
     <title>sMind Test</title>
 
+	<script type="text/html" id="add-toolbar-template">
+		<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>
+		<div class='network-seperatorLine'></div>
+		<span class='network-manipulationUI none' id='network-manipulate-back'>
+		<span class='network-manipulationLabel'>Label: </span>
+		<input id='node-label' value='1'>
+		<span class='network-manipulationLabel'>Shape: </span>
+		<select id='node-shape'>
+		<option value='ellipse'>Ellipse</option>
+		<option value='dot'>Dot</option>
+		<option value='image'>Image</option>
+		</select>
+
+		<span id='imageWrap' style='display:none'>
+		<span id='imageLabel' class='network-manipulationLabel'> 
+		URL: </span><input id='image-url' value='http://'></span>
+
+		<span id='network-manipulatorLabel' class='network-manipulationLabel'> 
+		Click an empty space to place a new node</span>
+		</span>
+	</script>
+
+	<script type="text/html" id="connect-toolbar-template">
+		<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>
+		<div class='network-seperatorLine'></div>
+		<span class='network-manipulationUI none' id='network-manipulate-back'>
+		<span id='network-manipulatorLabel' class='network-manipulationLabel'>Label: </span>
+		<input id='connect-label' value='1'>
+		<span id='network-manipulatorLabel' class='network-manipulationLabel'>Type: </span>
+		<select id='line-type'>
+		<option value='line'>Line</option>
+		<option value='dash-line'>Dash</option>
+		<option value='arrow'>Arrow</option>
+		<option value='arrow-center'>Arrow2</option>
+		</select>
+		<span id='network-manipulatorLabel' class='network-manipulationLabel'> 
+		Click on a node and drag the edge to another node to connect them</span>
+		</span>
+	</script> 
+
     <link type="text/css" rel="stylesheet" href="css/network.css">
 	<script type="text/javascript" src="libs/vis/dist/vis.js"></script>
-	<script type="text/javascript" src="js/network.js"></script>
 	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
-
+	<script type="text/javascript" src="js/network.js"></script>
+	
+	
   </head>
 
   <body onload="draw();">
-	<h1>sMind</h1>
-
-    <div id="network"></div>
+	<h1><img src="css/img/sMind.png" alt="sMind" style="width:188px; height=56px;"></h1>
+	
+	<div style="width:1500px;">
+		<div id="network" style="width:1100px; float:right;"></div>
+		<div id="searchDiv" class="searchDiv">
+		  <form id="searchForm" action="" method="">
+		    <input type="hidden" name="wt" value="json">
+		    <table>
+		    <tr>
+		    <td>search</td>
+		    <td><input type="text" id="search-id" name="q" value="*:*"></td>
+		    <td><button id="submitButton">Submit</button></td>
+		    </tr>
+		    </table>
+	      </form>
+	
+		  <div id="searchResult"></div>
+		</div>
+		 
+	</div>
+	<br>
     <p id="selection"></p>
 
   </body>

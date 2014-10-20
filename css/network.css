@@ -6,25 +6,28 @@
   border: 1px solid lightgray;
 }
 
+div#searchResult ul {
+	overflow:hidden;
+	width:300px;
+}
 
 div.searchDiv {
-    border-width:0px;
-    border-left: 1px;
+    border-width:1px;
+    border-right: 0px;
     border-style:solid;
     border-color: #d6d9d8;
-	width: 400;
+	width: 400px;
 	height: 600px;
-	z-index: 10;
-	position: absolute;
-	//float:right;
-	margin-left: 1100;
+	z-index: 11;
+	//float:left;
+	//position: absolute;
 }
 
 
 div.network-manipulationDiv {
-    border-width:0px;
+    border-width: 0px;
     border-bottom: 1px;
-    border-style:solid;
+    border-style: solid;
     border-color: #d6d9d8;
     background: #ffffff; /* Old browsers */
     background: -moz-linear-gradient(top,  #ffffff 0%, #fcfcfc 48%, #fafafa 50%, #fcfcfc 100%); /* FF3.6+ */
@@ -35,7 +38,7 @@ div.network-manipulationDiv {
     background: linear-gradient(to bottom,  #ffffff 0%,#fcfcfc 48%,#fafafa 50%,#fcfcfc 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#fcfcfc',GradientType=0 ); /* IE6-9 */
 
-    width: 1000px;
+    width: 600px;
     height:30px;
     z-index:10;
     position:absolute;
@@ -54,7 +57,7 @@ div.network-manipulation-closeDiv {
     z-index:11;
     position:absolute;
     margin-top:3px;
-    margin-left:1000px;
+    margin-left:1090px;
     background-position: 0px 0px;
     background-repeat:no-repeat;
     background-image: url("img/cross.png");

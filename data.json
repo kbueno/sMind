@@ -1,30 +1,7 @@
 {
     "Map4": {
-        "nodes": [
-            {
-                "id": "1",
-                "x": -299,
-                "y": -119.71875,
-                "label": "1",
-                "allowedToMoveX": true,
-                "allowedToMoveY": true
-            },
-            {
-                "id": "3",
-                "x": -176,
-                "y": -172.71875,
-                "label": "3",
-                "allowedToMoveX": true,
-                "allowedToMoveY": true
-            }
-        ],
-        "edges": [
-            {
-                "from": "1",
-                "to": "3",
-                "id": "a460f76f-b7e3-e700-ba45-f78d1b5c26e2"
-            }
-        ]
+        "nodes": [],
+        "edges": []
     },
     "mindMap1": {
         "nodes": [],
@@ -50,6 +27,86 @@
                 "from": "new value",
                 "to": "1",
                 "id": "2fdbf342-8759-3b8c-89c9-4c394e29e2"
+            }
+        ]
+    },
+    "oddMap": {
+        "nodes": [
+            {
+                "id": "109a4044-3a65-3530-8778-ab4c21911eb4",
+                "x": -317,
+                "y": -187.875,
+                "label": "1",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "9790661f-7501-b8da-a139-19236837c4d9",
+                "x": -203,
+                "y": -139.875,
+                "label": "5",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "aacb10f1-71f0-c0a9-fecd-9c6444ef932a",
+                "x": -306,
+                "y": -88.875,
+                "label": "3",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            }
+        ],
+        "edges": [
+            {
+                "from": "109a4044-3a65-3530-8778-ab4c21911eb4",
+                "to": "9790661f-7501-b8da-a139-19236837c4d9",
+                "id": "e247a4c9-6e40-b432-43af-608dc34c2eb7"
+            },
+            {
+                "from": "109a4044-3a65-3530-8778-ab4c21911eb4",
+                "to": "aacb10f1-71f0-c0a9-fecd-9c6444ef932a",
+                "id": "7c229fea-a046-511c-ac4c-73699d35e21"
+            }
+        ]
+    },
+    "evenMap": {
+        "nodes": [
+            {
+                "id": "d4bd2a4b-ebc-c507-9cc2-6a71d786f173",
+                "x": -362,
+                "y": -130.875,
+                "label": "2",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "9daa26bc-fd32-d8be-1896-2745b0035f3",
+                "x": -241,
+                "y": -141.875,
+                "label": "4",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "d92451ae-7179-a49f-98e2-c9883f283e59",
+                "x": -267,
+                "y": -35.875,
+                "label": "6",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            }
+        ],
+        "edges": [
+            {
+                "from": "d4bd2a4b-ebc-c507-9cc2-6a71d786f173",
+                "to": "9daa26bc-fd32-d8be-1896-2745b0035f3",
+                "id": "60552497-d913-8f66-dc2c-c8a795aa135c"
+            },
+            {
+                "from": "9daa26bc-fd32-d8be-1896-2745b0035f3",
+                "to": "d92451ae-7179-a49f-98e2-c9883f283e59",
+                "id": "397429d-c97d-15ef-d0bd-88ba9ead40ac"
             }
         ]
     }

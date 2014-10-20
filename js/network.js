@@ -32,10 +32,14 @@ function draw(data) {
         
 	dataManipulation: true,
 	onAdd: function(data, callback) {
-	  var idInput = document.getElementById('new-node-id');
-	  var labelInput = document.getElementById('new-node-label');
+	  var shapeInput = document.getElementById('node-shape');
+	  var labelInput = document.getElementById('node-label');
 	  
-	  data.id = idInput.value;
+	  if (shapeInput.value == 'image') {
+		//get url here
+	  }
+
+	  data.shape = shapeInput.value;
 	  data.label = labelInput.value;
 	  callback(data);
 	},
@@ -65,12 +69,7 @@ function draw(data) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
   });
 
-  var searchDiv = document.createElement('div');
-  searchDiv.className = "searchDiv";
-  searchDiv.id = "searchDiv";
-  network.containerElement.insertBefore(searchDiv,network.frame);
- 
-  /*
+  
   var submitButtom = document.getElementById('submitButton');
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
@@ -85,7 +84,6 @@ function draw(data) {
 	  }
 	})
   })
-  */
 
 };
 
@@ -94,41 +92,40 @@ function draw(data) {
 /*                        SEARCH FUNCTIONS                           */
 /*********************************************************************/
 
-function loadSearchSystem() {
-
-	/*
-	var form = document.createElement('form');
-	form.id = "searchForm";
-
-	var input = document.createElement
-	  <form id="searchForm" action="" method="">
-		<input type="hidden" name="wt" value="json">
-		<table>
-	    <tr>
-		<td>search</td>
-		<td><input type="text" id="search-id" name="q" value=""></td>
-		<td><button id="submitButton">Submit</button></td>
-	    </tr>
-	  </table>
-
-	  </form>
-	
-	  <div id="searchResult"></div>
-	  */
-
-}
-
 function displayResults(result) {
+	/*
 	var data = result.response;
 	var html = "<ul>"
 	console.log(data.docs)
 	for(var i = 0; i < data.docs.length; i++) {
 		var entry = data.docs[i]
-		html += "<li>"+entry.id.substring(10)+"</li>"
+		html += "<li value="+entry.id+">"+entry.id.substring(2)+"</li>"
 	}
 	html += "</ul>"
+	*/
 	
+	var data = result.response;
+    var html = "<dl>"
+    console.log(data.docs)
+    for(var i = 0; i < data.docs.length; i++) {
+        var entry = data.docs[i];
+		var pathToks = entry.id.split("/");
+		var formattedDateTime = new Date(entry.lastModified);
+		html += "<a href="+entry.id+">"+pathToks[pathToks.length-1]+"</a>"
+        html += "<dt>"+pathToks[pathToks.length-1]+"</dt>"
+        html += "<dd>author: "+entry.author+"..."+"</dd>"
+        html += "<dd>"+formattedDateTime.toString()+"</dd>"
+        html += "<dd>"+entry.text[0].substring(0,120)+"..."+"</dd>"
+    }
+    html += "</dl>";
+    
 	document.getElementById('searchResult').innerHTML = html;
+
+	$('#searchResult').on('click', function () {
+		//enable edit mode
+		console.log("click")
+		onAdd.call(network);
+	})
 }
 
 
@@ -262,17 +259,34 @@ function onAdd() {
     this.off('select', this.boundFunction);
   }
 
+  this.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
+  /*
   this.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none' id='network-manipulate-back'>" +
     "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-    "Name: </span><input id='new-node-id' value='1'>" +
+    "Label: </span><input id='node-label' value='1'>" +
     "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-    "Label: </span><input id='new-node-label' value='1'>" +
+	"Shape: </span><select id='node-shape'>"+
+	"<option value='ellipse'>Ellipse</option>"+
+	"<option value='image'>Image</option></select>"+
     "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
     this.constants.labels['addDescription'] + "</span></span>";
+  */
 
+  var shape = document.getElementById('node-shape');
+  $(shape).on('click', function () {
+	//enable edit mode
+	console.log("drop down click")
+	if (shape.value == 'image') {
+		$('#imageWrap').show()
+	}
+	else {
+		$('#imageWrap').hide()
+	}
+  });
+  
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
   backButton.onclick = this._createManipulatorBar.bind(this);
@@ -282,47 +296,29 @@ function onAdd() {
   this.on('select', this.boundFunction);
 };
 
-function onSave() {
-  this.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
-    "<div class='network-seperatorLine'></div>" +
-    "<span class='network-manipulationUI none' id='network-manipulate-back'>" +
-    "<input id='map-id' value='newMap'>" +
-    "<input type='button' value='save' id='save-map-button'></button></span>";
-	  
-  var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
-
-  var saveButton = document.getElementById("save-map-button");
-  var idInput = document.getElementById("map-id");
-  $(saveButton).on('click', function(){
-    saveMap(idInput.value)
-  })
-  $(saveButton).on('click', function(){
-    _createManipulatorBar();
-  })
+// Pop up for saving and loading
+function popup(url, type) {
+	newwindow=window.open(url,type,'height=400,width=400,top=400,left=400');
+	if (window.focus) {newwindow.focus()}
+	return false;
 }
 
+$(window).on('message', function(e) {
+	var data = e.originalEvent.data
+	if (data.name == 'load') {
+		loadMap(data)
+	}
+	else {
+		saveMap(data.id)
+	}
+})
+
+function onSave() {
+  popup('popupbasic.html', 'save');
+}
 
 function onLoad() {
-  this.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
-    "<div class='network-seperatorLine'></div>" +
-    "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-    "<input id='map-id' value='mindMap1'>" +
-    "<input type='button' value='load' id='load-map-button'></button></span>";
-	  
-  var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
-
-  var loadButton = document.getElementById("load-map-button");
-  var idInput = document.getElementById("map-id");
-  $(loadButton).on('click', function() {
-	loadMap(idInput.value, draw)
-  })
-  $(loadButton).on('click', function() {
-	_createManipulatorBar();
-  })
+  popup('popupbasic.html', 'load');
 }
 
 function onZoomFit() {
@@ -335,26 +331,25 @@ function onEdit(data,callback) {
 	network.off('select', this.boundFunction);
   }
 
+  network.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
+  /*
   network.manipulationDiv.innerHTML = "" +
 	"<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
 	"<div class='network-seperatorLine'></div>" +
 	"<span class='network-manipulationUI none' id='network-manipulate-back'>" +
 	"<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-	"Name: </span><input id='edit-node-id' value="+data.id+">" +
-	"<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
 	"Label: </span><input id='edit-node-label' value="+data.label+">" +
-	"<input type='button' value='save' id='edit-node-button'></button></span>";
-
+	"<input type='button' value='save' id='edit-node-button'></button>"+
+	"</span>";
+	*/
+  
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
   backButton.onclick = this._createManipulatorBar.bind(this);
 
   var saveButton = document.getElementById("edit-node-button");
   $(saveButton).on('click', function() {
-	  var idInput = document.getElementById('edit-node-id');
 	  var labelInput = document.getElementById('edit-node-label');
-	  
-	  data.id = idInput.value;
 	  data.label = labelInput.value;
 	  callback(data);
   });
@@ -374,12 +369,15 @@ function onConnect() {
   this.forceAppendSelection = false;
   this.blockConnectingEdgeSelection = true;
 
+  this.manipulationDiv.innerHTML = document.getElementById('connect-toolbar-template').innerHTML
+  /*
   this.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none' id='network-manipulate-back'>" +
     "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
 	this.constants.labels['linkDescription'] + "</span></span>";
+  */
 
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
@@ -426,7 +424,7 @@ function saveMap(val) {
   // Send to server		
   $.ajax({
 	type: "POST",
-	url: "data",
+	url: "data/save",
 	contentType: "application/json",
 	dataType: "json",
 	data: jsonData,
@@ -436,26 +434,23 @@ function saveMap(val) {
 
 
 // Load a map from a JSON file
-function loadMap(val, callBack) {
+function loadMap(data) {
   // Clear the map (needed if currently working on a map)
+  console.log(nodes.get())
   if (nodes.get() != []) {
-	clearMap(); 
-  }
-  // Send to server		
-  $.ajax({
-	type: "GET",
-	url: "data/" + val,
-	contentType: "application/json",
-	dataType: "json",
-	//on success
-	success: function (data) {
-		callBack(data);
+	var res = confirm("Are you sure you want to delete this map?");
+	if (res) {
+		clearMap(); 
 	}
-  });
+	else {
+		return
+	}
+  }
+
+  draw(data)
 };
 
 function clearMap() {
-  alert("Are you sure you want to delete this map?");
 	
   nodes.clear();
   edges.clear();
