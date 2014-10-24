@@ -33,7 +33,7 @@ see: http://www.codewrecks.com/blog/index.php/2013/05/25/import-folder-of-docume
             -->
             <entity name="files" dataSource="null" rootEntity="false"
             processor="FileListEntityProcessor"
-            baseDir="/home/jesse/Desktop/junk/docs" fileName=".*.(doc)|(pdf)|(docx)|(jpg)|(JPG)|(JPEG)|(jpeg)" 
+			baseDir="/home/kbueno/Code/sMind/libs/solr-4.6.0/Testing/TestDocs" fileName=".*.(doc)|(pdf)|(docx)|(jpg)|(JPG)|(JPEG)|(jpeg)" 
             onError="skip"
             recursive="true">
                 <field column="fileAbsolutePath" name="id" />  <!-- Stores the absolute path as SOLR documet id. The id of any search result gives us the path to the doc. -->

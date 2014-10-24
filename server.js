@@ -28,6 +28,10 @@ app.get('/popupbasic.html', function(req, res) {
 	res.sendFile(__dirname + '/popupbasic.html');
 });
 
+app.get('/docs/*', function(req, res) {
+	console.log(req.params)
+	res.sendFile(req.params[0]);
+});
 // Get data from the client
 app.get('/solr', function(req, res) {
 	

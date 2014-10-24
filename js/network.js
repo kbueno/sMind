@@ -1,16 +1,16 @@
-var nodes = new vis.DataSet();
-var edges = new vis.DataSet();
-var network = null;
+var nodes = new vis.DataSet()
+var edges = new vis.DataSet()
+var network = null
 
 function draw(data) {
   // create a network
-  var container = document.getElementById('network');
+  var container = document.getElementById('network')
 
   if (data == undefined) {
     data = {
 	  nodes: nodes,
 	  edges: edges
-    };
+    }
   } else {
 	nodes.add(data.nodes),
 	edges.add(data.edges)
@@ -36,15 +36,16 @@ function draw(data) {
 	  var labelInput = document.getElementById('node-label');
 	  
 	  if (shapeInput.value == 'image') {
-		//get url here
+		  data.image = document.getElementById('image-url').value;
 	  }
 
 	  data.shape = shapeInput.value;
 	  data.label = labelInput.value;
+	  console.log(data)
 	  callback(data);
 	},
 	onEdit: function(data,callback) {
-		onEdit(data,callback);	
+		_onEdit(data,callback);	
 	},
 	onConnect: function(data,callback) {
 	  if (data.from == data.to) {
@@ -57,7 +58,7 @@ function draw(data) {
 		callback(data);
 	  }
 	}
-  };
+  }
 
   // Create the network and override the toolbar function
   network = new vis.Network(container, data, options);
@@ -67,9 +68,15 @@ function draw(data) {
   // add event listeners
   network.on('select', function(params) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
-  });
-
+  })
   
+  // open file on doubleclick
+  network.on('doubleClick', function(params) {
+	console.log("on doubleclick")
+	var base = "home/kbueno/Code/sMind/libs/solr-4.6.0/Testing/TestDocs/"
+	window.open("/docs/"+base + params.nodes, "_blank", "toolbar=no, scrollbars=no, resizable=yes, top=500, left=500, width=600, height=600");
+  })
+ 
   var submitButtom = document.getElementById('submitButton');
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
@@ -85,7 +92,7 @@ function draw(data) {
 	})
   })
 
-};
+}
 
 
 /*********************************************************************/
@@ -93,38 +100,30 @@ function draw(data) {
 /*********************************************************************/
 
 function displayResults(result) {
-	/*
-	var data = result.response;
-	var html = "<ul>"
-	console.log(data.docs)
-	for(var i = 0; i < data.docs.length; i++) {
-		var entry = data.docs[i]
-		html += "<li value="+entry.id+">"+entry.id.substring(2)+"</li>"
-	}
-	html += "</ul>"
-	*/
-	
-	var data = result.response;
-    var html = "<dl>"
+	var data = result.response
     console.log(data.docs)
+    
+	var html = ""
     for(var i = 0; i < data.docs.length; i++) {
         var entry = data.docs[i];
 		var pathToks = entry.id.split("/");
 		var formattedDateTime = new Date(entry.lastModified);
-		html += "<a href="+entry.id+">"+pathToks[pathToks.length-1]+"</a>"
-        html += "<dt>"+pathToks[pathToks.length-1]+"</dt>"
+		html += "<li><ul><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></ul></li>"
+		html += "<dl pathName='"+pathToks[pathToks.length-1]+"'>"
+		html += "<dd>file: "+pathToks[pathToks.length-1]+"</dd>"
         html += "<dd>author: "+entry.author+"..."+"</dd>"
         html += "<dd>"+formattedDateTime.toString()+"</dd>"
         html += "<dd>"+entry.text[0].substring(0,120)+"..."+"</dd>"
+		html += "</dl>"
     }
-    html += "</dl>";
     
 	document.getElementById('searchResult').innerHTML = html;
 
-	$('#searchResult').on('click', function () {
+	$('#searchResult dl').on('click', function (e) {
+		var path = this.getAttribute('pathName');
 		//enable edit mode
-		console.log("click")
-		onAdd.call(network);
+		console.log(path)
+		_onAdd.call(network, path);
 	})
 }
 
@@ -203,13 +202,13 @@ _createManipulatorBar = function() {
 	var zoomFitButton = document.getElementById("network-manipulate-zoomFit");
 	zoomFitButton.onclick = onZoomFit.bind(this);
     var addNodeButton = document.getElementById("network-manipulate-addNode");
-    addNodeButton.onclick = onAdd.bind(this);
+    addNodeButton.onclick = _onAdd.bind(this, undefined);
     var addEdgeButton = document.getElementById("network-manipulate-connectNode");
     addEdgeButton.onclick = onConnect.bind(this);
     
 	if (network._getSelectedNodeCount() == 1 && network.triggerFunctions.edit) {
       var editButton = document.getElementById("network-manipulate-editNode");
-      editButton.onclick = network._editNode.bind(this);
+      editButton.onclick = _editNode.bind(this);
     }
     else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
       var editButton = document.getElementById("network-manipulate-editEdge");
@@ -247,33 +246,78 @@ _createManipulatorBar = function() {
   }
 };
 
+// Overwrite edit function
+_editNode = function() {
+    if (this.triggerFunctions.edit && this.editMode == true) {
+      var node = this._getSelectedNode();
+      var data = {id:node.id,
+        label: node.label,
+        group: node.options.group,
+        shape: node.options.shape,
+		image: node.options.image,
+        color: {
+          background:node.options.color.background,
+          border:node.options.color.border,
+          highlight: {
+            background:node.options.color.highlight.background,
+            border:node.options.color.highlight.border
+          }
+        }};
+      if (this.triggerFunctions.edit.length == 2) {
+        var me = this;
+        this.triggerFunctions.edit(data, function (finalizedData) {
+          me.nodesData.update(finalizedData);
+          me._createManipulatorBar();
+          me.moving = true;
+          me.start();
+        });
+      }
+      else {
+        alert(this.constants.labels["editError"]);
+      }
+    }
+    else {
+      alert(this.constants.labels["editBoundError"]);
+    }
+  };
 
 /*********************************************************************/
 /*                      BUTTON SPECIFIC TOOLBARS                     */
 /*********************************************************************/
 
 
-function onAdd() {
+function _onAdd(path) {
   this._clearManipulatorBar();
   if (this.boundFunction) {
     this.off('select', this.boundFunction);
   }
 
-  this.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
-  /*
+  //this.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
   this.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
-    "<span class='network-manipulationUI none' id='network-manipulate-back'>" +
-    "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-    "Label: </span><input id='node-label' value='1'>" +
-    "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-	"Shape: </span><select id='node-shape'>"+
+    "<span class='network-manipulationUI none'>" +
+    "<span class='network-manipulationLabel'>Label: </span>" +
+	"<input id='node-label' value=''>" +
+    "<span class='network-manipulationLabel'>Shape: </span>" +
+	"<select id='node-shape'>"+
 	"<option value='ellipse'>Ellipse</option>"+
-	"<option value='image'>Image</option></select>"+
-    "<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
+	"<option value='image'>Image</option>"+
+	"<option value='box'>Box</option>"+
+	"<option value='database'>Database</option>"+
+	"<option value='circle'>Circle</option>"+
+	"<option value='dot'>Dot</option></select>"+
+	
+	"<span id='imageWrap' style='display:none'>" +
+	"<span id='imageLabel' class='network-manipulationLabel'>URL: </span>" +
+	"<input id='image-url' value='http://'></span>" +
+
+    "<span class='network-manipulationLabel'>" + 
     this.constants.labels['addDescription'] + "</span></span>";
-  */
+
+  if (path != undefined) {
+	document.getElementById('node-label').value = path
+  }
 
   var shape = document.getElementById('node-shape');
   $(shape).on('click', function () {
@@ -325,33 +369,68 @@ function onZoomFit() {
 	network.zoomExtent();	
 }
 
-function onEdit(data,callback) {
+function _onEdit(data,callback) {
   network._clearManipulatorBar();
   if (network.boundFunction) {
 	network.off('select', this.boundFunction);
   }
 
-  network.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
-  /*
+  //network.manipulationDiv.innerHTML = document.getElementById('add-toolbar-template').innerHTML
   network.manipulationDiv.innerHTML = "" +
-	"<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
-	"<div class='network-seperatorLine'></div>" +
-	"<span class='network-manipulationUI none' id='network-manipulate-back'>" +
-	"<span id='network-manipulatorLabel' class='network-manipulationLabel'>" + 
-	"Label: </span><input id='edit-node-label' value="+data.label+">" +
+    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
+    "<div class='network-seperatorLine'></div>" +
+    "<span class='network-manipulationUI none'>" +
+    "<span class='network-manipulationLabel'>Label: </span>" +
+	"<input id='node-label' value=''>" +
+    "<span class='network-manipulationLabel'>Shape: </span>" +
+	"<select id='node-shape'>"+
+	"<option value='ellipse'>Ellipse</option>"+
+	"<option value='image'>Image</option>"+
+	"<option value='box'>Box</option>"+
+	"<option value='database'>Database</option>"+
+	"<option value='circle'>Circle</option>"+
+	"<option value='dot'>Dot</option></select>"+
+	
+	"<span id='imageWrap' style='display:none'>" +
+	"<span class='network-manipulationLabel'>URL: </span>" +
+	"<input id='image-url' value='http://'></span>" +
+	
 	"<input type='button' value='save' id='edit-node-button'></button>"+
 	"</span>";
-	*/
   
+  console.log(data)
+  document.getElementById('node-label').value = data.label
+
+  var shape = document.getElementById('node-shape');
+  $(shape).val(data.shape).change()
+  if (shape.value == 'image') {
+	$('#imageWrap').show()
+	document.getElementById('image-url').value = data.image	
+  }
+
+  $(shape).on('click', function () {
+	//TODO: enable edit mode
+	if (shape.value == 'image') {
+		$('#imageWrap').show()
+	}
+	else {
+		$('#imageWrap').hide()
+	}
+  });
+
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
   backButton.onclick = this._createManipulatorBar.bind(this);
 
   var saveButton = document.getElementById("edit-node-button");
   $(saveButton).on('click', function() {
-	  var labelInput = document.getElementById('edit-node-label');
-	  data.label = labelInput.value;
-	  callback(data);
+	var labelInput = document.getElementById('node-label');
+	var shapeInput = document.getElementById('node-shape');
+	  
+	data.label = labelInput.value;
+	data.shape = shapeInput.value;
+	  
+	callback(data);
   });
 }
 

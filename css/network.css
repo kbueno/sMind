@@ -1,14 +1,37 @@
 #network {
-  position:relative;
-  float:left;
-  width: 1500px;
-  height: 600px;
-  border: 1px solid lightgray;
+	//position:relative;
+	width: 1500px;
+	height: 600px;
+	border: 1px solid lightgray;
 }
 
-div#searchResult ul {
-	overflow:hidden;
-	width:300px;
+#mapTable {
+	cursor:pointer;	
+	//text-align: center;
+    //border: 1px solid #d6d9d8;
+}
+
+
+ul {
+	padding: 0px 0px 0px 10px;	
+	margin: 0px;
+}
+
+div#searchResult a {
+	cursor: default;
+	//overflow:auto;
+	//overflow-y:scroll;
+	//width:395px;
+	//height:570px;
+}
+
+div#searchResult dl {
+	margin-top: 0px;
+}
+
+div#searchResult dl:hover {
+	cursor: pointer;
+	border: 1px solid black;
 }
 
 div.searchDiv {
@@ -16,9 +39,10 @@ div.searchDiv {
     border-right: 0px;
     border-style:solid;
     border-color: #d6d9d8;
-	width: 400px;
+	width: 396px;
 	height: 600px;
 	z-index: 11;
+	overflow:auto;
 	//float:left;
 	//position: absolute;
 }

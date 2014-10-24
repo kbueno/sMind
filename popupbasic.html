@@ -3,6 +3,8 @@
   <head>
     <title>sMind Popup</title>
 	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/network.css">
+
 	<script>
 		// Wraping everything in a functions makes sure
 		// that the HTML gets generated before running this
@@ -22,8 +24,12 @@
 			function displayMaps(data) {
 				var entry = Object.keys(data)
 				
+				//var html = "<tr>";
 				var html = "";
 				for (var i = 0; i < entry.length; i++) {
+					//if (i % 4 == 0 && i != 0) {
+					//	html += "</tr><tr>"
+					//}
 					html += "<tr><td data-entryID='"+entry[i]+"'>" +entry[i]+"</td></tr>"
 				}
 				//html += "</tr>"

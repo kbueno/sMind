@@ -502,7 +502,8 @@ exports._editEdge = function(sourceNodeId,targetNodeId) {
 exports._editNode = function() {
   if (this.triggerFunctions.edit && this.editMode == true) {
     var node = this._getSelectedNode();
-    var data = {id:node.id,
+    var data = {
+	  id: node.id,
       label: node.label,
       group: node.options.group,
       shape: node.options.shape,
