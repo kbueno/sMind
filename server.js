@@ -1,9 +1,8 @@
 var express = require('express');
-var app = express();
-
 var fs = require('fs');
 var bodyParser = require('body-parser');
 
+var app = express();
 app.use(bodyParser.json());
 app.use('/libs', express.static(__dirname + '/libs'));
 app.use('/css', express.static(__dirname + '/css'));
@@ -31,12 +30,6 @@ app.get('/popupbasic.html', function(req, res) {
 app.get('/docs/*', function(req, res) {
 	console.log(req.params)
 	res.sendFile(req.params[0]);
-});
-// Get data from the client
-app.get('/solr', function(req, res) {
-	
-	res.send(200,data);
-	//res.status(status).send(body);
 });
 
 // Get data from the client

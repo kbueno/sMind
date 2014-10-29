@@ -4,30 +4,10 @@
   <head>
     <title>sMind Test</title>
 
-	<script type="text/html" id="connect-toolbar-template">
-		<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>
-		<div class='network-seperatorLine'></div>
-		<span class='network-manipulationUI none' id='network-manipulate-back'>
-		<span id='network-manipulatorLabel' class='network-manipulationLabel'>Label: </span>
-		<input id='connect-label' value='1'>
-		<span id='network-manipulatorLabel' class='network-manipulationLabel'>Type: </span>
-		<select id='line-type'>
-		<option value='line'>Line</option>
-		<option value='dash-line'>Dash</option>
-		<option value='arrow'>Arrow</option>
-		<option value='arrow-center'>Arrow2</option>
-		</select>
-		<span id='network-manipulatorLabel' class='network-manipulationLabel'> 
-		Click on a node and drag the edge to another node to connect them</span>
-		</span>
-	</script> 
-
     <link type="text/css" rel="stylesheet" href="css/network.css">
 	<script type="text/javascript" src="libs/vis/dist/vis.js"></script>
 	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="js/network.js"></script>
-	
-	
   </head>
 
   <body onload="draw();">

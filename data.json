@@ -71,43 +71,7 @@
         ]
     },
     "evenMap": {
-        "nodes": [
-            {
-                "id": "d4bd2a4b-ebc-c507-9cc2-6a71d786f173",
-                "x": -362,
-                "y": -130.875,
-                "label": "2",
-                "allowedToMoveX": true,
-                "allowedToMoveY": true
-            },
-            {
-                "id": "9daa26bc-fd32-d8be-1896-2745b0035f3",
-                "x": -241,
-                "y": -141.875,
-                "label": "4",
-                "allowedToMoveX": true,
-                "allowedToMoveY": true
-            },
-            {
-                "id": "d92451ae-7179-a49f-98e2-c9883f283e59",
-                "x": -267,
-                "y": -35.875,
-                "label": "6",
-                "allowedToMoveX": true,
-                "allowedToMoveY": true
-            }
-        ],
-        "edges": [
-            {
-                "from": "d4bd2a4b-ebc-c507-9cc2-6a71d786f173",
-                "to": "9daa26bc-fd32-d8be-1896-2745b0035f3",
-                "id": "60552497-d913-8f66-dc2c-c8a795aa135c"
-            },
-            {
-                "from": "9daa26bc-fd32-d8be-1896-2745b0035f3",
-                "to": "d92451ae-7179-a49f-98e2-c9883f283e59",
-                "id": "397429d-c97d-15ef-d0bd-88ba9ead40ac"
-            }
-        ]
+        "nodes": [],
+        "edges": []
     }
 }
