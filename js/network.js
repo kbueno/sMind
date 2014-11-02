@@ -92,10 +92,11 @@ function draw(data) {
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
 	var input = $('#searchForm').serialize();
+  input += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E"; //appends highlighting parameters to the user-query
 	$.ajax({
-	  url: "http://localhost:7777/solr/collection1/select",
-	  //jsonp: "json.wrf",
-	  dataType: "json",
+	  url: "http://localhost:8983/solr/collection1/select",
+	  jsonp: "json.wrf",
+	  dataType: "jsonp",
 	  data: input,
 	  success: function(response) {
 		displayResults(response);
@@ -106,31 +107,42 @@ function draw(data) {
 }
 
 
-/*********************************************************************/
-/*                        SEARCH FUNCTIONS                           */
-/*********************************************************************/
+/*********************************************************************
+                        SEARCH FUNCTIONS                           
 
-
+The highlight strings are returned in a response as their own dictionary.
+You key into this dictionary with the doc.id to get the highlighting object
+for that document, then dereference the object with .text to get the highlighted 
+text. As to why the highlights are returned separately from the docs, in the
+words of Zhe Dang, don't ask me why ... because I have no ******ing clue.
+/*********************************************************************/
 // Displays the results from a search query
 function displayResults(result) {
-  var data = result.response
-  console.log(data.docs)
-   
-  // Format results in HTML
-  var html = ""
+	var data = result.response
+    console.log(data.docs)
+  var highlights = result.highlighting; //the hit highlights are a separate object in the response (separate from the docs object)
+    
+	var html = ""
   for(var i = 0; i < data.docs.length; i++) {
     var entry = data.docs[i];
-	var pathToks = entry.id.split("/");
-	var formattedDateTime = new Date(entry.lastModified);
-	html += "<li><ul><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></ul></li>"
-	html += "<dl pathName='"+pathToks[pathToks.length-1]+"'>"
-	html += "<dd>file: "+pathToks[pathToks.length-1]+"</dd>"
+    var highlightStr = highlights[entry.id].text;
+    var pathToks = entry.id.split("/");
+    var formattedDateTime = new Date(entry.lastModified);
+    html += "<li><ul><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></ul></li>"
+    html += "<dl pathName='"+pathToks[pathToks.length-1]+"'>"
+    html += "<dd>file: "+pathToks[pathToks.length-1]+"</dd>"
     html += "<dd>author: "+entry.author+"..."+"</dd>"
+    //highlighted result strings can sometimes be empty, in which case we'll instead print the first few lines of that doc
+    if(highlightStr !== undefined){  //print highlight string if not empty
+      html += "<dd>"+highlightStr+"</dd>"
+    }
+    else{  //else print the first lines of the doc
+      html += "<dd>"+entry.text[0].substring(0,120)+"..."+"</dd>"
+    }
     html += "<dd>"+formattedDateTime.toString()+"</dd>"
-    html += "<dd>"+entry.text[0].substring(0,120)+"..."+"</dd>"
-	html += "</dl>"
-  }   
-  document.getElementById('searchResult').innerHTML = html;
+    html += "</dl>"
+  }
+	document.getElementById('searchResult').innerHTML = html;
 
   // Event listener for clicking on entry
   $('#searchResult dl').on('click', function (e) {
