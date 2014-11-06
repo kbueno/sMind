@@ -103,6 +103,8 @@ function draw(data) {
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
 	var input = $('#searchForm').serialize();
+    //appends highlighting parameters to the user-query
+	input += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
 	$.ajax({
 	  url: "http://localhost:7777/solr/collection1/select",
 	  dataType: "json",
@@ -116,8 +118,14 @@ function draw(data) {
 }
 
 
-/*********************************************************************/
-/*                        SEARCH FUNCTIONS                           */
+/*********************************************************************
+                        SEARCH FUNCTIONS                           
+
+The highlight strings are returned in a response as their own dictionary.
+You key into this dictionary with the doc.id to get the highlighting object
+for that document, then dereference the object with .text to get the highlighted 
+text. As to why the highlights are returned separately from the docs, in the
+words of Zhe Dang, don't ask me why ... because I have no ******ing clue.
 /*********************************************************************/
 
 
@@ -128,12 +136,12 @@ function displayResults(result) {
   // the hit highlights are a separate object in the response 
   // (separate from the docs object)
   var highlights = result.highlighting;
-  console.log(highlights)
    
   // Format results in HTML
   var html = ""
   for(var i = 0; i < data.docs.length; i++) {
     var entry = data.docs[i];
+    var highlightStr = highlights[entry.id].text;
 	var pathToks = entry.id.split("/");
 	var formattedDateTime = new Date(entry.lastModified);
 
@@ -146,8 +154,8 @@ function displayResults(result) {
 	// highlighted result strings can sometimes be empty, 
 	// in which case we'll instead print the first few lines of that doc
 	// print highlight string if not empty
-	if (highlights !== undefined && highlights[entry.id].text) {
-      html += "<dd>"+highlightStr+"</dd>"
+    if(highlightStr !== undefined) { 
+      html += "<dd><b>Text:</b> "+highlightStr+"</dd>"
     }
     else{  //else print the first lines of the doc
 	  html += "<dd><b>Text:</b> "+entry.text[0].substring(0,120)+"..."+"</dd>"
