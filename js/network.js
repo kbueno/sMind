@@ -41,6 +41,8 @@ function draw(data) {
 	  
 	  if (shapeInput.value == 'image') {
 		  data.image = document.getElementById('nodeImage').value;
+		  // TODO: check if image is valid?
+		  // if (data.image...)
 	  }
 
 	  data.shape = shapeInput.value;
@@ -57,10 +59,10 @@ function draw(data) {
 	  }
 
 	  var labelInput = document.getElementById('edgeLabel');
-	  var lineInput = document.getElementById('edgeType');
+	  var typeInput = document.getElementById('edgeType');
 	  
 	  data.label = labelInput.value;
-	  data.style = lineInput.value;
+	  data.style = typeInput.value;
 	  console.log(data);
 	  callback(data);
 	}
@@ -77,28 +79,36 @@ function draw(data) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
   })
   
-  // TODO: get to work
   // This opens editNode or editEdge toolbar
   // Will also show a preview in search bar if possible
   network.on('doubleClick', function(params) {
-	console.log("on doubleclick")
-	//_editNode().call(network)
-	//var base = "home/kbueno/Code/sMind/libs/solr-4.6.0/Testing/TestDocs/"
-	//window.open("/docs/"+base + params.nodes, "_blank", "toolbar=no, scrollbars=no, resizable=yes, top=500, left=500, width=600, height=600");
+	// need to set tapAlways to false, otherwise
+	// edit toolbar will not be created to first time
+	// doubleclick is used
+	network.hammer.options.tapAlways = false
+	if (network._getSelectedNodeCount() == 1) {
+	  // TODO: open search result in search bar
+	  //var base = "home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/"
+	  //window.open("/docs/"+base + params.nodes, "_blank", "toolbar=no, scrollbars=no, resizable=yes, top=500, left=500, width=600, height=600");
+	  _editNode.call(network)
+	}
+    else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
+	  createEditEdgeToolbar.call(network)
+	}	
+	
   })
- 
-  // TODO: switch to nginx
+
+  // This handles the submit button for the search bar
   var submitButtom = document.getElementById('submitButton');
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
 	var input = $('#searchForm').serialize();
 	$.ajax({
 	  url: "http://localhost:7777/solr/collection1/select",
-	  //jsonp: "json.wrf",
 	  dataType: "json",
 	  data: input,
 	  success: function(response) {
-		displayResults(response);
+		displayResults(response)
 	  }
 	})
   })
@@ -115,6 +125,10 @@ function draw(data) {
 function displayResults(result) {
   var data = result.response
   console.log(data.docs)
+  // the hit highlights are a separate object in the response 
+  // (separate from the docs object)
+  var highlights = result.highlighting;
+  console.log(highlights)
    
   // Format results in HTML
   var html = ""
@@ -122,12 +136,23 @@ function displayResults(result) {
     var entry = data.docs[i];
 	var pathToks = entry.id.split("/");
 	var formattedDateTime = new Date(entry.lastModified);
+
 	html += "<li><ul><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></ul></li>"
-	html += "<dl pathName='"+pathToks[pathToks.length-1]+"'>"
-	html += "<dd>file: "+pathToks[pathToks.length-1]+"</dd>"
-    html += "<dd>author: "+entry.author+"..."+"</dd>"
-    html += "<dd>"+formattedDateTime.toString()+"</dd>"
-    html += "<dd>"+entry.text[0].substring(0,120)+"..."+"</dd>"
+	html += "<dl pathName='"+entry.id+"'>"
+	html += "<dd><b>File:</b> "+pathToks[pathToks.length-1]+"</dd>"
+    html += "<dd><b>Author:</b> "+entry.author+"..."+"</dd>"
+    html += "<dd><b>Date:</b> "+formattedDateTime.toString()+"</dd>"
+	
+	// highlighted result strings can sometimes be empty, 
+	// in which case we'll instead print the first few lines of that doc
+	// print highlight string if not empty
+	if (highlights !== undefined && highlights[entry.id].text) {
+      html += "<dd>"+highlightStr+"</dd>"
+    }
+    else{  //else print the first lines of the doc
+	  html += "<dd><b>Text:</b> "+entry.text[0].substring(0,120)+"..."+"</dd>"
+    }
+    
 	html += "</dl>"
   }   
   document.getElementById('searchResult').innerHTML = html;
@@ -140,11 +165,11 @@ function displayResults(result) {
 	  network._toggleEditMode.call(network);
 	}
 	
-	// TODO: path whole path
+	// TODO: whole path
 	// Call addNode toolbar and pass the path
 	var path = this.getAttribute('pathName');
 	console.log(path)
-	_onAdd.call(network, path);
+	createAddNodeToolbar.call(network, path);
   })
 }
 
@@ -226,9 +251,9 @@ _createManipulatorBar = function() {
 	var zoomFitButton = document.getElementById("network-manipulate-zoomFit");
 	zoomFitButton.onclick = onZoomFit.bind(this);
     var addNodeButton = document.getElementById("network-manipulate-addNode");
-    addNodeButton.onclick = _onAdd.bind(this, undefined);
+    addNodeButton.onclick = createAddNodeToolbar.bind(this, undefined);
     var addEdgeButton = document.getElementById("network-manipulate-connectNode");
-    addEdgeButton.onclick = _onConnect.bind(this);
+    addEdgeButton.onclick = createAddEdgeToolbar.bind(this);
     
 	if (network._getSelectedNodeCount() == 1) {
       var editButton = document.getElementById("network-manipulate-editNode");
@@ -236,7 +261,7 @@ _createManipulatorBar = function() {
     }
     else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
       var editButton = document.getElementById("network-manipulate-editEdge");
-      editButton.onclick = _editEdge.bind(this);
+      editButton.onclick = createEditEdgeToolbar.bind(this);
     }
     if (network._selectionIsEmpty() == false) {
       var deleteButton = document.getElementById("network-manipulate-delete");
@@ -270,35 +295,6 @@ _createManipulatorBar = function() {
   }
 };
 
-// Override edit function, added attributes to pass back like image, url, etc
-_editNode = function() {
-    if (this.editMode == true) {
-      var node = this._getSelectedNode();
-      var data = {
-		id:node.id,
-        label: node.label,
-        group: node.options.group,
-        shape: node.options.shape,
-		image: node.options.image,
-        color: {
-          background:node.options.color.background,
-          border:node.options.color.border,
-          highlight: {
-            background:node.options.color.highlight.background,
-            border:node.options.color.highlight.border
-          }
-        }};
-      var me = this;
-      onEdit(data, function (finalizedData) {
-	    me.nodesData.update(finalizedData);
-        me._createManipulatorBar();
-        me.moving = true;
-        me.start();
-      });
-    }
-};
-
-
 
 /*********************************************************************/
 /*                      BUTTON SPECIFIC TOOLBARS                     */
@@ -306,7 +302,7 @@ _editNode = function() {
 
 
 // Create the add toolbar when the 'add node' button is clicked
-function _onAdd(path) {
+function createAddNodeToolbar(path) {
   // Clear whatever toolbar was being used in order to create this one
   this._clearManipulatorBar();
   if (this.boundFunction) {
@@ -318,9 +314,11 @@ function _onAdd(path) {
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
-    "<span class='network-manipulationLabel'>Label: </span>" +
+    
+	"<span class='network-manipulationLabel'>Label: </span>" +
 	"<input id='nodeLabel' value=''>" +
-    "<span class='network-manipulationLabel'>Shape: </span>" +
+    
+	"<span class='network-manipulationLabel'>Shape: </span>" +
 	"<select id='nodeShape'>"+
 	"<option value='ellipse'>Ellipse</option>"+
 	"<option value='image'>Image</option>"+
@@ -330,18 +328,26 @@ function _onAdd(path) {
 	"<option value='dot'>Dot</option></select>"+
 	
 	"<span id='imageWrap' style='display:none'>" +
-	"<span id='imageLabel' class='network-manipulationLabel'>URL: </span>" +
+	"<span id='imageLabel' class='network-manipulationLabel'>Path: </span>" +
 	"<input id='nodeImage' value='css/img/'></span>" +
+
+	"<span class='network-manipulationLabel'>Link: </span>" +
+	"<input id='nodeURL' value='http://'>" +
 
     "<span class='network-manipulationLabel'>" + 
     this.constants.labels['addDescription'] + "</span></span>";
 
   // If a path was provided, then an image is default selected
   if (path != undefined) {
+	//var pathToks = path.split("/");
+    //title = pathToks[pathToks.length-1]
+		
 	document.getElementById('nodeLabel').value = path
 	var image = document.getElementById('nodeImage')
 	
+	// TODO: automate this more?...
 	// Determine what kind of image to use
+	var types = ['.doc', '.pdf', '.jpeg',]
 	if (path.indexOf('.doc') > -1) {
 	  image.value = 'css/img/doc.png'
 	}
@@ -379,7 +385,6 @@ function _onAdd(path) {
   this.on('select', this.boundFunction);
 };
 
-
 // Create the edit toolbar when the 'edit node' button is clicked
 function onEdit(data, callback) {
   // Clear whatever toolbar was being used in order to create this one
@@ -395,7 +400,8 @@ function onEdit(data, callback) {
     "<span class='network-manipulationUI none'>" +
     "<span class='network-manipulationLabel'>Label: </span>" +
 	"<input id='nodeLabel' value=''>" +
-    "<span class='network-manipulationLabel'>Shape: </span>" +
+    
+	"<span class='network-manipulationLabel'>Shape: </span>" +
 	"<select id='nodeShape'>"+
 	"<option value='ellipse'>Ellipse</option>"+
 	"<option value='image'>Image</option>"+
@@ -406,8 +412,11 @@ function onEdit(data, callback) {
 	
 	"<span id='imageWrap' style='display:none'>" +
 	"<span class='network-manipulationLabel'>URL: </span>" +
-	"<input id='nodeImage' value='http://'></span>" +
+	"<input id='nodeImage' value=''></span>" +
 	
+	"<span class='network-manipulationLabel'>Link: </span>" +
+	"<input id='nodeURL' value='http://'>" +
+
 	"<input type='button' value='save' id='edit-node-button'></button>"+
 	"</span>";
  
@@ -420,6 +429,8 @@ function onEdit(data, callback) {
 	$('#imageWrap').show()
 	document.getElementById('nodeImage').value = data.image	
   }
+
+  document.getElementById('nodeURL').value = data.url
 
   // Shape event listener
   $(shape).on('click', function () {
@@ -442,18 +453,19 @@ function onEdit(data, callback) {
 	var labelInput = document.getElementById('nodeLabel');
 	var shapeInput = document.getElementById('nodeShape');
 	var imageInput = document.getElementById('nodeImage');
-	  
+	var linkInput = document.getElementById('nodeURL');
+
 	data.label = labelInput.value;
 	data.shape = shapeInput.value;
 	data.image = imageInput.value;
+	data.url = linkInput.value;
 	  
 	callback(data);
   });
 }
 
- 
 // Create the edit toolbar when the 'edit node' button is clicked
-function _onConnect() {
+function createAddEdgeToolbar() {
   // Clear whatever toolbar was being used in order to create this one
   this._clearManipulatorBar();
   this._unselectAll(true);
@@ -473,9 +485,9 @@ function _onConnect() {
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
 	"<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='edgeLabel' value='1'>" +
-	"<span class='network-manipulationLabel'>Type: </span>" +
+	"<input id='edgeLabel' value=''>" +
 	
+	"<span class='network-manipulationLabel'>Type: </span>" +
 	"<select id='edgeType'>" +
 	"<option value='line'>Line</option>" +
 	"<option value='dash-line'>Dash</option>" +
@@ -485,7 +497,6 @@ function _onConnect() {
     
 	"<span class='network-manipulationLabel'>" + 
 	this.constants.labels['linkDescription'] + "</span></span>";
-  
 
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
@@ -505,8 +516,8 @@ function _onConnect() {
   this._redraw();
 };
 
-
-_editEdge = function() {
+// Create the edit edge toolbar when the 'edit edge' button is clicked
+function createEditEdgeToolbar() {
   // clear the toolbar
   this._clearManipulatorBar();
   this.controlNodesActive = true;
@@ -515,18 +526,19 @@ _editEdge = function() {
     this.off('select', this.boundFunction);
   }
 
+  // get selected edge
   this.edgeBeingEdited = this._getSelectedEdge();
   this.edgeBeingEdited._enableControlNodes();
 
-  
+  // All the HTML for the toolbar goes here
   this.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
 	"<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='edgeLabel' value='1'>" +
-	"<span class='network-manipulationLabel'>Type: </span>" +
+	"<input id='edgeLabel' value=''>" +
 	
+	"<span class='network-manipulationLabel'>Type: </span>" +
 	"<select id='edgeType'>" +
 	"<option value='line'>Line</option>" +
 	"<option value='dash-line'>Dash</option>" +
@@ -534,10 +546,37 @@ _editEdge = function() {
 	"<option value='arrow-center'>Arrow2</option>" +
 	"</select>" +
     
-    "<span class='network-manipulationUI none'>" +
-    "<span class='network-manipulationLabel'>" + 
+	"<input type='button' value='save' id='edit-edge-button'></button>"+
+	"<span class='network-manipulationLabel'>" + 
 	this.constants.labels['editEdgeDescription'] + "</span></span>";
+ 
   
+  // TODO: FIX THIS
+  document.getElementById('edgeLabel').value = this.edgeBeingEdited.label
+  
+  var type = document.getElementById('edgeType');
+  $(type).val(this.edgeBeingEdited.options.style).change()
+   
+  console.log(this.edgeBeingEdited.id)
+
+  // Bind the save button
+  var saveButton = document.getElementById("edit-edge-button");
+  $(saveButton).on('click', function() {
+	var labelInput = document.getElementById('edgeLabel');
+	var typeInput = document.getElementById('edgeType');
+
+	var data = {
+	  id: network.edgeBeingEdited.id,
+	  label: labelInput.value,
+	  style: typeInput.value
+	}
+	
+    network.edgesData.update(data);
+    network._createManipulatorBar();
+    network.moving = true;
+    network.start();
+  });
+
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
   backButton.onclick = this._createManipulatorBar.bind(this);
@@ -558,6 +597,44 @@ _editEdge = function() {
   this._redraw();
 };
 
+// TODO: Fix exponential zooming out...
+function onZoomFit() {
+	network.zoomExtent()
+}
+
+
+/*********************************************************************/
+/*                        BUTTION FUNCTONS                           */
+/*********************************************************************/
+
+
+// Override edit function, added attributes to pass back like image, url, etc
+_editNode = function() {
+    if (this.editMode == true) {
+      var node = this._getSelectedNode();
+      var data = {
+		id:node.id,
+        label: node.label,
+        group: node.options.group,
+        shape: node.options.shape,
+		image: node.options.image,
+        color: {
+          background:node.options.color.background,
+          border:node.options.color.border,
+          highlight: {
+            background:node.options.color.highlight.background,
+            border:node.options.color.highlight.border
+          }
+        }};
+      var me = this;
+      onEdit(data, function (finalizedData) {
+	    me.nodesData.update(finalizedData);
+        me._createManipulatorBar();
+        me.moving = true;
+        me.start();
+      });
+    }
+};
 
 // Creates a pop up for saving and loading
 function popup(url, type) {
@@ -577,17 +654,6 @@ $(window).on('message', function(e) {
 		saveMap(data.id)
 	}
 })
-
-// TODO: Fix exponential zooming out...
-function onZoomFit() {
-	network.zoomExtent()
-}
-
-
-/*********************************************************************/
-/*                        BUTTION FUNCTONS                           */
-/*********************************************************************/
-
 
 // convenience method to stringify a JSON object
 function toJSON (obj) {

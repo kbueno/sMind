@@ -27,9 +27,10 @@ app.get('/popupbasic.html', function(req, res) {
 	res.sendFile(__dirname + '/popupbasic.html');
 });
 
+// TODO: How to open up in a new window?
 app.get('/docs/*', function(req, res) {
 	console.log(req.params)
-	res.sendFile(req.params[0]);
+	res.sendFile("/"+req.params[0]);
 });
 
 // Get data from the client
