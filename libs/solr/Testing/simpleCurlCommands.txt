@@ -1,0 +1,14 @@
+
+
+delete all docs in index: 
+curl http://index.websolr.com/solr/a0b1c2d3/update -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'
+curl http://localhost:8983/solr/collection1/update -H '<delete><query>*:*</query></delete>'
+
+
+or go to example/exampledocs directory (or post.jar), and:
+java -Ddata=args -Dcommit=false -jar post.jar "<delete><id>SP2514N</id></delete>"
+
+
+
+
+

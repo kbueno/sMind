@@ -4,10 +4,13 @@
   <head>
     <title>sMind Test</title>
 
-    <link type="text/css" rel="stylesheet" href="css/network.css">
+	<link type="text/css" rel='stylesheet' href='libs/spectrum/spectrum.css' />
+    <link type="text/css" rel="stylesheet" href="css/network.css" />
 	<script type="text/javascript" src="libs/vis/dist/vis.js"></script>
 	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="js/network.js"></script>
+	<script type="text/javascript" src="libs/spectrum/spectrum.js"></script>
+
   </head>
 
   <body onload="draw();">
@@ -19,15 +22,15 @@
 		  <form id="searchForm" action="" method="">
 		    <input type="hidden" name="wt" value="json">
 		    <table>
-		    <tr>
-		    <td>search</td>
-		    <td><input type="text" id="search-id" name="q" value="*:*"></td>
-		    <td><button id="submitButton">Submit</button></td>
-		    </tr>
+			  <tr>
+		        <td>search</td>
+		        <td><input type="text" id="search-id" name="q" value="*:*"></td>
+		        <td><button id="submitButton">Submit</button></td>
+		      </tr>
 		    </table>
 	      </form>
 	
-		  <div id="searchResult"></div>
+		  <ul id="searchResult"></ul>
 		</div>
 		 
 	</div>
