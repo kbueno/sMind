@@ -5,12 +5,34 @@
 	border: 1px solid lightgray;
 }
 
+#nodeLabel {
+	width: 100px;
+}
+#nodeImage {
+	width: 100px;
+}
 
-/* Pop Up Elements */
 #mapTable {
-	cursor:pointer;	
-	//text-align: center;
-    //border: 1px solid #d6d9d8;
+	width: 100px;
+	cursor: pointer;
+}
+#mapTable tr:hover {
+	background-color: #dadada;
+}
+
+#mapTable tr.selected {
+	background-color: #dadada;
+}
+
+
+#fileMenu {
+	width: 70px;
+	position: fixed; 
+	margin-top: 1px;
+}
+
+.menuOption {
+	width: 90px;
 }
 
 
@@ -70,7 +92,11 @@ div.network-manipulationDiv {
     height:30px;
     z-index:10;
     position:absolute;
+	overflow-x: auto;
+	//overflow-y: hidden;
 }
+
+
 
 div.network-manipulation-editMode {
     height:30px;
@@ -258,3 +284,4 @@ div.network-seperatorLine {
    border-radius: 3px;
    color: #222;
 }
+

@@ -4,16 +4,20 @@
   <head>
     <title>sMind Test</title>
 
-	<link type="text/css" rel='stylesheet' href='libs/spectrum/spectrum.css' />
+	<link type="text/css" rel="stylesheet" href="libs/spectrum/spectrum.css" />
+    <link type="text/css" rel="stylesheet" href="libs/jquery-ui/jquery-ui.css" />
     <link type="text/css" rel="stylesheet" href="css/network.css" />
+
 	<script type="text/javascript" src="libs/vis/dist/vis.js"></script>
 	<script type="text/javascript" src="libs/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="js/network.js"></script>
 	<script type="text/javascript" src="libs/spectrum/spectrum.js"></script>
+	<script type="text/javascript" src="libs/jquery-ui/jquery-ui.js"></script>
 
   </head>
 
   <body onload="draw();">
+
 	<h1><img src="css/img/sMind.png" alt="sMind" style="width:188px; height=56px;"></h1>
 	
 	<div style="width:1500px;">
@@ -27,6 +31,11 @@
 		        <td><input type="text" id="search-id" name="q" value="*:*"></td>
 		        <td><button id="submitButton">Submit</button></td>
 		      </tr>
+			  <tr>
+				<td><input type="checkbox" id="title" value="title">Title</td>
+				<td><input type="checkbox" id="author" value="author">Author</td>
+				<td><input type="checkbox" id="text" value="text">Text</td>
+			  </tr>
 		    </table>
 	      </form>
 	
@@ -37,5 +46,11 @@
 	<br>
     <p id="selection"></p>
 
+	<div id="filePopup" title="sMind Map">
+	  <table id='mapTable'></table>
+	</div>
+
+	<iframe src="" id="downloadFrame" style="display:none;"></iframe>
+      
   </body>
 </html>

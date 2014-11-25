@@ -37,69 +37,31 @@ function draw(data) {
         
 	dataManipulation: true,
 	onAdd: function(data, callback) {
-	  var shapeInput = document.getElementById('nodeShape');
-	  var labelInput = document.getElementById('nodeLabel');
-	  var urlInput = document.getElementById('nodeURL');
-	  var path = document.getElementById('nodePath');
-	  var colorInput = $('#nodeColor').spectrum('get')
-
-	  if (shapeInput.value == 'image') {
-		  data.image = document.getElementById('nodeImage').value;
-		  // TODO: check if image is valid?
-		  // if (data.image...)
-	  }
-
-	  if (path !== null) {
-		data.path = path.getAttribute('pathName');
-	  }
-
-	  data.color =  colorInput.toHexString();
-	  data.url = urlInput.value;
-	  data.shape = shapeInput.value;
-	  data.label = labelInput.value;
-	  
-	  console.log(data)
-	  callback(data);
+	  onAdd(data,callback);
 	},
 	onConnect: function(data, callback) {
-	  if (data.from == data.to) {
-		var res = confirm("Do you want to connect the node to itself?");
-		if (!res) {
-			return;
-		}
-	  }
-
-	  var labelInput = document.getElementById('edgeLabel');
-	  var typeInput = document.getElementById('edgeType');
-	  
-	  data.label = labelInput.value;
-	  data.style = typeInput.value;
-	  
-	  console.log(data);
-	  callback(data);
+	  onConnect(data,callback);
 	}
   }
 
   // Create the network and override the main toolbar function
   network = new vis.Network(container, data, options);
-  network._createManipulatorBar = _createManipulatorBar.bind(network)
-  network._createManipulatorBar()
+  network._createManipulatorBar = _createManipulatorBar.bind(network);
+  network._createManipulatorBar();
 
   // Add event listeners
   // This just displays selected nodes
   network.on('select', function(params) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
-  })
+  });
   
-  // This opens editNode or editEdge toolbar
-  // Will also show a preview in search bar if possible
+  // This will open the node link if it exists or
+  // show the search results in search bar if it exists
   network.on('doubleClick', function(params) {
-	// Need to set tapAlways to false, otherwise edit toolbar will not be created 
-	// the first time doubleclick is used
-	network.hammer.options.tapAlways = false;
+	// Make sure a node is actually selested
 	if (network._getSelectedNodeCount() == 1) {
-	  var node = nodes.get(params.nodes[0])
-	  console.log(node)
+	  var node = nodes.get(params.nodes[0]);
+	  console.log(node);
 	  
 	  // TODO: open search result in search bar
 	  if (node.path != undefined) {
@@ -109,52 +71,117 @@ function draw(data) {
 	  if (node.url != "") {
 		window.open(node.url, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
-		
-	  _editNode.call(network)
-	}
-    else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
-	  createEditEdgeToolbar.call(network)
 	}	
-	
-  })
+  });
 
   // This handles the submit button for the search bar
   var submitButtom = document.getElementById('submitButton');
   $(submitButton).on('click', function(e) {
 	e.preventDefault();
 	var input = $('#searchForm').serialize();
-    
-	
 	//appends highlighting parameters to the user-query
 	input += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
-	
-	
 	
 	$.ajax({
 	  url: "http://localhost:7777/solr/collection1/select",
 	  dataType: "json",
 	  data: input,
-	  success: function(response) {
-		displayResults(response)
+	  success: function(res) {
+		displayResults(res);
 	  }
-	})
-  })
+	});
+  });
 
+  // Initialize file menu popup
+  $('#filePopup').dialog({
+	minWidth: 200,
+	minHeight: 100,
+    height: 200,
+    modal: true,
+  });
+  $('#filePopup').dialog('close');
+};
+
+/*********************************************************************/
+/* Collects the data to create a node                                */
+/*********************************************************************/
+function onAdd(data, callback) {
+  var shapeInput = document.getElementById('nodeShape');
+  var labelInput = document.getElementById('nodeLabel');
+  var linkInput = document.getElementById('nodeURL');
+  var path = document.getElementById('nodePath');
+  var colorInput = $('#nodeColor').spectrum('get');
+
+  if (path !== null) {
+	data.path = path.getAttribute('pathName');
+  }
+  if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
+	linkInput.value = 'http://' + linkInput.value;
+  }
+
+  data.color = colorInput.toHexString();
+  data.url = linkInput.value;
+  data.shape = shapeInput.value;
+  data.label = labelInput.value;
+	  
+  console.log(data);
+
+  if (shapeInput.value != 'image') {
+	callback(data);
+  }
+  // If there is an image to upload, get the image
+  else {
+	var file = document.getElementById('nodeImage').files[0];
+	console.log(file);
+
+	if (!file.type.match('image.*')) {
+	  //warn user that image is not an image type
+	}
+
+	var form = new FormData();
+	form.append('img', file, file.name);
+	console.log(form);
+
+	$.ajax({
+      url: '/upload/image',
+      type: 'POST',
+      data: form,
+      cache: false,
+      dataType: 'json',
+      processData: false,
+      contentType: false, 
+      success: function(res) {
+		data.image = res.imagePath;
+		callback(data);
+      },
+    });	
+  }
 }
 
-
-/*********************************************************************
-                        SEARCH FUNCTIONS                           
-
-The highlight strings are returned in a response as their own dictionary.
-You key into this dictionary with the doc.id to get the highlighting object
-for that document, then dereference the object with .text to get the highlighted 
-text. As to why the highlights are returned separately from the docs, in the
-words of Zhe Dang, don't ask me why ... because I have no ******ing clue.
 /*********************************************************************/
+/* Collects the data to create a link                                */
+/*********************************************************************/
+function onConnect(data, callback) {
+  if (data.from == data.to) {
+    var res = confirm("Do you want to connect the node to itself?");
+	if (!res) {
+	  return;
+	}
+  }
 
-
-// Displays the results from a search query
+  var labelInput = document.getElementById('edgeLabel');
+  var typeInput = document.getElementById('edgeType');
+	  
+  data.label = labelInput.value;
+  data.style = typeInput.value;
+	  
+  console.log(data);
+  callback(data);
+}
+	
+/*********************************************************************/
+/* Displays the results from a search query                          */
+/*********************************************************************/
 function displayResults(result) {
   var data = result.response
   console.log(data)
@@ -234,17 +261,26 @@ _createManipulatorBar = function() {
   var editModeDiv = document.getElementById("network-manipulation-editMode");
   editModeDiv.style.display="none";
 
-  // If in edit mode, create edit modes toolbar
-  if (network.editMode == true) {
-    while (network.manipulationDiv.hasChildNodes()) {
-      network.manipulationDiv.removeChild(network.manipulationDiv.firstChild);
-    }
-	
-	// Edit options Button
-    network.manipulationDiv.innerHTML = "" +
+ 
+  // WARNING: Could cause potential css problems?
+  network.editMode = true;
+  // Edit options Button
+  network.manipulationDiv.innerHTML = "" +
       "<span class='network-manipulationUI save' id='network-manipulate-saveMap' title='Save'></span>" +
-      "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI load' id='network-manipulate-loadMap' title='Load'></span>" +
+	  
+	  "<span id='menuWrap' style='display:none;'>" +
+	  "<ul id='fileMenu'>" +
+		"<li><span class='save'></span>Save<ul class='menuOption'>" +
+			"<li id='saveToDisk'>To Disk</li><input type='file' id='saveFile' style='display:none;'>" +
+			"<li id='saveToSmind'>To sMind</li>" +
+		"</ul></li>" +
+		"<li><span class='load'></span>Load<ul class='menuOption'>" +
+			"<li id='loadFromDisk'>From Disk</li><input type='file' id='loadFile' style='display:none;'>" +
+			"<li id='loadFromSmind'>From sMind</li>" +
+		"</ul></li>" +
+	  "</ul>" +
+	  "</span>" +
+
 	  "<div class='network-seperatorLine'></div>" +
       "<span class='network-manipulationUI zoomFit' id='network-manipulate-zoomFit' title='Zoom Fit'></span>" +
 	  "<div class='network-seperatorLine'></div>" +
@@ -270,9 +306,29 @@ _createManipulatorBar = function() {
 
     // bind the icons
 	var saveMapButton = document.getElementById("network-manipulate-saveMap");
-	saveMapButton.onclick = popup.bind(this,'popupbasic.html','save');
-	var loadMapButton = document.getElementById("network-manipulate-loadMap");
-	loadMapButton.onclick = popup.bind(this,'popupbasic.html','load');
+	saveMapButton.onclick = function () { 
+		$('#fileMenu').menu();
+		$('#menuWrap').show(); 
+	};
+	$('#fileMenu').mouseleave(function(){ $('#menuWrap').hide() }); 
+	
+	var saveToDisk = document.getElementById("saveToDisk");
+	saveToDisk.onclick = downloadFile.bind(this);
+	var saveToSmind = document.getElementById("saveToSmind");
+	saveToSmind.onclick = popup.bind(this, "Save");
+	var loadFromDisk = document.getElementById("loadFromDisk");
+	loadFromDisk.onclick = function () {
+		console.log('onDisk')
+		$('#loadFile').trigger('click');
+		return false;
+	}
+    $('#loadFile').change(function () {
+		console.log("onchange");
+		uploadFile()
+	});
+	var loadFromSmind = document.getElementById("loadFromSmind");
+	loadFromSmind.onclick = popup.bind(this, "Load");
+
 	var zoomFitButton = document.getElementById("network-manipulate-zoomFit");
 	zoomFitButton.onclick = onZoomFit.bind(this);
     var addNodeButton = document.getElementById("network-manipulate-addNode");
@@ -297,28 +353,8 @@ _createManipulatorBar = function() {
 
     network.boundFunction = network._createManipulatorBar.bind(this);
     network.on('select', network.boundFunction);
-
-  }
-  else {
-    network.manipulationDiv.innerHTML = "" +
-      "<span class='network-manipulationUI save' id='network-manipulate-saveMap' title='Save'></span>" +
-      "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI load' id='network-manipulate-loadMap' title='Load'></span>" +
-      "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI zoomFit' id='network-manipulate-zoomFit' title='Zoom Fit'></span>" +
-	  "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI edit' id='network-manipulate-editModeButton' title='Edit'></span>";
-	
-	var saveMapButton = document.getElementById("network-manipulate-saveMap");
-	saveMapButton.onclick = popup.bind(this,'popupbasic.html','save');
-	var loadMapButton = document.getElementById("network-manipulate-loadMap");
-	loadMapButton.onclick = popup.bind(this,'popupbasic.html','load');
-	var zoomFitButton = document.getElementById("network-manipulate-zoomFit");
-	zoomFitButton.onclick = onZoomFit.bind(this);
-    var editModeButton = document.getElementById("network-manipulate-editModeButton");
-    editModeButton.onclick = network._toggleEditMode.bind(this);
-  }
 };
+
 
 
 /*********************************************************************/
@@ -326,13 +362,13 @@ _createManipulatorBar = function() {
 /*********************************************************************/
 function createAddNodeToolbar(path) {
   // Clear whatever toolbar was being used in order to create this one
-  this._clearManipulatorBar();
-  if (this.boundFunction) {
-    this.off('select', this.boundFunction);
+  network._clearManipulatorBar();
+  if (network.boundFunction) {
+    network.off('select', network.boundFunction);
   }
 
   // All the HTML for the toolbar goes here
-  this.manipulationDiv.innerHTML = "" +
+  network.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
@@ -340,7 +376,7 @@ function createAddNodeToolbar(path) {
 	"<span class='network-manipulationLabel'>Label: </span>" +
 	"<input id='nodeLabel' value=''>" +
     
-	"<span class='network-manipulationLabel'>Shape: </span>" +
+	//"<span id='nodeShape'><span>"+
 	"<select id='nodeShape'>"+
 	"<option value='ellipse'>Ellipse</option>"+
 	"<option value='image'>Image</option>"+
@@ -349,23 +385,36 @@ function createAddNodeToolbar(path) {
 	"<option value='circle'>Circle</option>"+
 	"<option value='dot'>Dot</option></select>"+
 
-	// TODO: make this an upload image
 	"<span id='imageWrap' style='display:none'>" +
-	"<span id='imageLabel' class='network-manipulationLabel'>Path: </span>" +
-	"<input id='nodeImage' value='css/img/'></span>" +
+	"<input type='file' id='nodeImage'></span>" +
 
     "<input type='text' id='nodeColor'/>" +
-
+	
+	"<span class='network-manipulationLabel'>Group: </span>" +
+	"<select id='nodeGroup'>" +
+	"<option value='none'>None</option>" +
+	"<option value='new'>New Group</option>" +
+	"</select>" +
+	
+	//"<span id='groupWrap' style='display:none'>" +
+	//"<input id='groupLabel' value='1'></span>" +
+	
 	"<span class='network-manipulationLabel'>Link: </span>" +
 	"<input id='nodeURL' value=''>" +
 
     "<span class='network-manipulationLabel'>" + 
-    this.constants.labels['addDescription'] + "</span></span>";
+    network.constants.labels['addDescription'] + "</span></span>";
 
+
+  //TODO!
+  // create shape icon dropdown
+  /*
+  */
+  
   // If a path was provided, then an image is default selected
   if (path != undefined) {
 	// save the path somewhere
-    this.manipulationDiv.innerHTML += "" + "<span id='nodePath' pathName='"+path+"'>";
+    network.manipulationDiv.innerHTML += "" + "<span id='nodePath' pathName='"+path+"'>";
 	var pathToks = path.split("/");
     title = pathToks[pathToks.length-1]
 		
@@ -374,7 +423,6 @@ function createAddNodeToolbar(path) {
 	
 	// TODO: change this, or automate this more, or add more...
 	// Determine what kind of image to use
-	var types = ['.doc', '.pdf', '.jpeg',]
 	if (title.indexOf('.doc') > -1) {
 	  image.value = 'css/img/doc.png'
 	}
@@ -390,6 +438,19 @@ function createAddNodeToolbar(path) {
 	$(shape).val('image').change()
 	$('#imageWrap').show()
   }
+
+  /*
+  // Group event listener
+  var group = document.getElementById('nodeGroup');
+  $(group).on(click, function () {
+	if (group.value == 'new') {
+	  //new group turns to input box inside <option>
+	}
+	else if (group.value != 'none') {
+	  // set color of group
+	}
+  });
+  */
 
   // Shape event listener
   var shape = document.getElementById('nodeShape');
@@ -412,11 +473,11 @@ function createAddNodeToolbar(path) {
 
   // Bind the back button
   var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
+  backButton.onclick = network._createManipulatorBar.bind(this);
 
   // We use the boundFunction so we can reference it when we unbind it from the "select" event.
-  this.boundFunction = this._addNode.bind(this);
-  this.on('select', this.boundFunction);
+  network.boundFunction = network._addNode.bind(this);
+  network.on('select', network.boundFunction);
 };
 
 /*********************************************************************/
@@ -426,7 +487,7 @@ function createEditNodeToolbar(data, callback) {
   // Clear whatever toolbar was being used in order to create this one
   network._clearManipulatorBar();
   if (network.boundFunction) {
-	network.off('select', this.boundFunction);
+	network.off('select', network.boundFunction);
   }
 
   // All the HTML for the toolbar goes here
@@ -447,7 +508,7 @@ function createEditNodeToolbar(data, callback) {
 	"<option value='dot'>Dot</option></select>"+
 	
 	"<span id='imageWrap' style='display:none'>" +
-	"<span class='network-manipulationLabel'>Path: </span>" +
+	"<span class='network-manipulationLabel'>ImageURL: </span>" +
 	"<input id='nodeImage' value=''></span>" +
 	
     "<input type='text' id='nodeColor'/>" +
@@ -460,6 +521,7 @@ function createEditNodeToolbar(data, callback) {
  
   // Set all the defaults
   document.getElementById('nodeLabel').value = data.label
+  document.getElementById('nodeURL').value = data.url
 
   var shape = document.getElementById('nodeShape');
   $(shape).val(data.shape).change()
@@ -489,7 +551,7 @@ function createEditNodeToolbar(data, callback) {
 
   // Bind the back button
   var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
+  backButton.onclick = network._createManipulatorBar.bind(this);
 
   // Bind the save button
   var saveButton = document.getElementById("edit-node-button");
@@ -500,6 +562,11 @@ function createEditNodeToolbar(data, callback) {
 	var linkInput = document.getElementById('nodeURL');
 	var colorInput = $('#nodeColor').spectrum('get')
 	  
+	if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
+	  console.log('Adding HTTP')
+	  linkInput.value = 'http://' + linkInput.value
+	}
+
 	data.color =  colorInput.toHexString();
 	data.label = labelInput.value;
 	data.shape = shapeInput.value;
@@ -515,20 +582,20 @@ function createEditNodeToolbar(data, callback) {
 /*********************************************************************/
 function createAddEdgeToolbar() {
   // Clear whatever toolbar was being used in order to create this one
-  this._clearManipulatorBar();
-  this._unselectAll(true);
-  this.freezeSimulation = true;
+  network._clearManipulatorBar();
+  network._unselectAll(true);
+  network.freezeSimulation = true;
 
-  if (this.boundFunction) {
-    this.off('select', this.boundFunction);
+  if (network.boundFunction) {
+    network.off('select', network.boundFunction);
   }
 
-  this._unselectAll();
-  this.forceAppendSelection = false;
-  this.blockConnectingEdgeSelection = true;
+  network._unselectAll();
+  network.forceAppendSelection = false;
+  network.blockConnectingEdgeSelection = true;
 
   // All the HTML for the toolbar goes here
-  this.manipulationDiv.innerHTML = "" +
+  network.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
@@ -544,24 +611,24 @@ function createAddEdgeToolbar() {
 	"</select>" +
     
 	"<span class='network-manipulationLabel'>" + 
-	this.constants.labels['linkDescription'] + "</span></span>";
+	network.constants.labels['linkDescription'] + "</span></span>";
 
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
+  backButton.onclick = network._createManipulatorBar.bind(this);
 
   // we use the boundFunction so we can reference it when we unbind it from the "select" event.
-  this.boundFunction = this._handleConnect.bind(this);
-  this.on('select', this.boundFunction);
+  network.boundFunction = network._handleConnect.bind(this);
+  network.on('select', network.boundFunction);
 
   // temporarily overload functions
-  this.cachedFunctions["_handleTouch"] = this._handleTouch;
-  this.cachedFunctions["_handleOnRelease"] = this._handleOnRelease;
-  this._handleTouch = this._handleConnect;
-  this._handleOnRelease = this._finishConnect;
+  network.cachedFunctions["_handleTouch"] = network._handleTouch;
+  network.cachedFunctions["_handleOnRelease"] = network._handleOnRelease;
+  network._handleTouch = network._handleConnect;
+  network._handleOnRelease = network._finishConnect;
 
   // redraw to show the unselect
-  this._redraw();
+  network._redraw();
 };
 
 /*********************************************************************/
@@ -569,19 +636,19 @@ function createAddEdgeToolbar() {
 /*********************************************************************/
 function createEditEdgeToolbar() {
   // clear the toolbar
-  this._clearManipulatorBar();
-  this.controlNodesActive = true;
+  network._clearManipulatorBar();
+  network.controlNodesActive = true;
 
-  if (this.boundFunction) {
-    this.off('select', this.boundFunction);
+  if (network.boundFunction) {
+    network.off('select', network.boundFunction);
   }
 
   // get selected edge
-  this.edgeBeingEdited = this._getSelectedEdge();
-  this.edgeBeingEdited._enableControlNodes();
+  network.edgeBeingEdited = network._getSelectedEdge();
+  network.edgeBeingEdited._enableControlNodes();
 
   // All the HTML for the toolbar goes here
-  this.manipulationDiv.innerHTML = "" +
+  network.manipulationDiv.innerHTML = "" +
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
@@ -598,15 +665,15 @@ function createEditEdgeToolbar() {
     
 	"<input type='button' value='save' id='edit-edge-button'></button>"+
 	"<span class='network-manipulationLabel'>" + 
-	this.constants.labels['editEdgeDescription'] + "</span></span>";
+	network.constants.labels['editEdgeDescription'] + "</span></span>";
  
   
-  document.getElementById('edgeLabel').value = this.edgeBeingEdited.label
+  document.getElementById('edgeLabel').value = network.edgeBeingEdited.label
   
   var type = document.getElementById('edgeType');
-  $(type).val(this.edgeBeingEdited.options.style).change()
+  $(type).val(network.edgeBeingEdited.options.style).change()
    
-  console.log(this.edgeBeingEdited.id)
+  console.log(network.edgeBeingEdited.id)
 
   // Bind the save button
   var saveButton = document.getElementById("edit-edge-button");
@@ -628,22 +695,22 @@ function createEditEdgeToolbar() {
 
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
-  backButton.onclick = this._createManipulatorBar.bind(this);
+  backButton.onclick = network._createManipulatorBar.bind(network);
 
   // temporarily overload functions
-  this.cachedFunctions["_handleTouch"]      = this._handleTouch;
-  this.cachedFunctions["_handleOnRelease"]  = this._handleOnRelease;
-  this.cachedFunctions["_handleTap"]        = this._handleTap;
-  this.cachedFunctions["_handleDragStart"]  = this._handleDragStart;
-  this.cachedFunctions["_handleOnDrag"]     = this._handleOnDrag;
-  this._handleTouch     = this._selectControlNode;
-  this._handleTap       = function () {};
-  this._handleOnDrag    = this._controlNodeDrag;
-  this._handleDragStart = function () {}
-  this._handleOnRelease = this._releaseControlNode;
+  network.cachedFunctions["_handleTouch"]      = network._handleTouch;
+  network.cachedFunctions["_handleOnRelease"]  = network._handleOnRelease;
+  network.cachedFunctions["_handleTap"]        = network._handleTap;
+  network.cachedFunctions["_handleDragStart"]  = network._handleDragStart;
+  network.cachedFunctions["_handleOnDrag"]     = network._handleOnDrag;
+  network._handleTouch     = network._selectControlNode;
+  network._handleTap       = function () {};
+  network._handleOnDrag    = network._controlNodeDrag;
+  network._handleDragStart = function () {}
+  network._handleOnRelease = network._releaseControlNode;
 
   // redraw to show the unselect
-  this._redraw();
+  network._redraw();
 };
 
 /*********************************************************************/
@@ -692,16 +759,19 @@ _editNode = function() {
 /*********************************************************************/
 /* Creates a pop up for saving and loading                           */
 /*********************************************************************/
+/*
 function popup(url, type) {
 	newwindow=window.open(url,type,'height=400,width=400,top=400,left=400');
 	if (window.focus) {newwindow.focus()}
 	return false;
 }
+*/
 
 /*********************************************************************/
 /* Handles the response from the pop up                              */
 /* Calls the appropriate functions                                   */ 
 /*********************************************************************/
+/*
 $(window).on('message', function(e) {
 	var data = e.originalEvent.data
 	if (data.name == 'load') {
@@ -711,6 +781,47 @@ $(window).on('message', function(e) {
 		saveMap(data.id)
 	}
 })
+*/
+
+/*********************************************************************/
+/* Creates a pop up for saving and loading                           */
+/*********************************************************************/
+function popup(type) {
+  // TODO: input box from save
+  //ui-dialog-buttonpane
+ 
+  $('#filePopup').dialog("option", "title", "sMind Map: " + type);
+	
+  var buttons = [{
+	text: "Cancel",
+	click: function() {
+	  $(this).dialog( "close" );
+	}
+  },
+  {
+    text: type,
+    click: function() {
+	  var input = document.getElementsByClassName("selected");
+	  console.log(input)
+	  //loadMap(input);
+      $(this).dialog( "close" );
+	}
+  }];
+  $('#filePopup').dialog("option", "buttons", buttons);
+  $('#filePopup').dialog("open");
+
+
+
+  $.ajax({
+    type: "GET",
+	url: "data",
+	contentType: "application/json",
+	dataType: "json",
+	success: function (data) {
+	  displayMaps(data);
+	}
+  });
+}
 
 /*********************************************************************/
 /* convenience method to stringify a JSON object                     */
@@ -765,6 +876,66 @@ function loadMap(data) {
   draw(data)
 };
 
+
+/*********************************************************************/
+/* Download a file from disk   										 */
+/*********************************************************************/
+function downloadFile () {
+  // Get the lists of node and edge objects
+  var data = {
+	nodes: nodes.get({fields: ['id','label','x','y','allowedToMoveX','allowedToMoveY']}),
+	edges: edges.get()
+  };
+  var jsonData = toJSON({
+	data: data
+  });
+  
+  // Send to server		
+  $.ajax({
+	type: "POST",
+	url: "/download/file",
+	contentType: "application/json",
+	dataType: "json",
+	data: jsonData,
+	success: function (res) {
+	  console.log("SAVE DATA");
+	  console.log(res);
+	  
+	  var frame = document.getElementById("downloadFrame")
+	  frame.src = "download/file/"+res.id;
+    }
+  });
+}
+
+/*********************************************************************/
+/* Upload a file from disk   										 */
+/*********************************************************************/
+function uploadFile () {
+  var file = document.getElementById('loadFile').files[0]
+  console.log(file)
+		
+  //if (!file.type.match('json.*')) {
+    //warn user that image is not an image type
+  //}
+
+  var form = new FormData();
+  form.append('map', file, file.name)
+
+  $.ajax({
+    url: '/upload/file',
+    type: 'POST',
+    data: form,
+    cache: false,
+    dataType: 'json',
+    processData: false,
+    contentType: false, 
+    success: function(res, textStatus, jqXHR) {
+	  console.log("DATA")
+      console.log(res)
+    },
+  });	
+}
+
 /*********************************************************************/
 /* TODO: make this work...                                           */
 /*********************************************************************/
@@ -772,5 +943,26 @@ function clearMap() {
 	
   nodes.clear();
   edges.clear();
-};
+}
+
+/*********************************************************************/
+/* Display table of map names                                        */
+/*********************************************************************/
+function displayMaps(data) {
+  var entry = Object.keys(data)
+
+  var html = "";
+  for (var i = 0; i < entry.length; i++) {
+	html += "<tr><td data-entryID='"+entry[i]+"'>" +entry[i]+"</td></tr>"
+  }
+  document.getElementById('mapTable').innerHTML = html;	
+			
+  $('#mapTable tr').click( function(e) {
+	//var name = e.target.getAttribute('data-entryID');
+	//document.getElementById('mapID').value = name 
+	
+	$(this).siblings().removeClass("selected");
+	$(this).toggleClass("selected");
+  });				
+}
 
