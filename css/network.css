@@ -9,11 +9,14 @@
 	width: 100px;
 }
 #nodeImage {
-	width: 100px;
+	width: 180px;
 }
+//#mapID {
+//	width 100px;
+//}
 
 #mapTable {
-	width: 100px;
+	width: 200px;
 	cursor: pointer;
 }
 #mapTable tr:hover {
@@ -274,14 +277,30 @@ div.network-seperatorLine {
     top:0;left:0;bottom:0;right:0;
 }
 
+.sp-input-container {
+    float:left;
+    width: 65px;
+    margin-bottom: 4px;
+}
+
+.sp-initial-disabled  .sp-input-container {
+    width: 65px;
+}
+
 .sp-input {
    font-size: 12px !important;
    border: 1px inset;
    padding: 4px 5px;
    margin: 0;
-   width: 100%;
+   width: 65px;
    background:white;
    border-radius: 3px;
    color: #222;
 }
 
+.sp-container {
+    border-radius: 0;
+    background-color: #ECECEC;
+    border: solid 1px #666;
+    padding: 0;
+}

@@ -43,7 +43,8 @@ app.get('/data', function(req, res) {
 
 // Post data from the client
 app.post('/data/save', function(req, res) {
-	console.log(req.body);
+	console.log("SERVER SAVE")
+    console.log(req.body);
 	// Create a unique ID and store in data
 	var id = req.body["name"]
 	data[id] = req.body["data"];
@@ -88,7 +89,7 @@ app.get('/download/file/:id', function(req, res) {
 	}
 });
 
-// Uploads an inamge to the img folder
+// Uploads an image to the img folder
 app.post('/upload/image', function(req, res) {
 	var fstream;
 	req.pipe(req.busboy)

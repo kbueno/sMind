@@ -1,26 +1,70 @@
 {
-    "Map1": {
+    "123": {
         "nodes": [
             {
-                "id": "1",
-                "label": "1"
+                "id": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "x": -256,
+                "y": -120.875,
+                "label": "one",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
             },
             {
-                "id": "new value",
-                "x": -283,
-                "y": -115.71875,
-                "label": "2",
+                "id": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "x": -26,
+                "y": -122.875,
+                "label": "two",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "x": -105,
+                "y": -12.875,
+                "label": "three",
                 "allowedToMoveX": true,
                 "allowedToMoveY": true
             }
         ],
         "edges": [
             {
-                "from": "new value",
-                "to": "1",
-                "id": "2fdbf342-8759-3b8c-89c9-4c394e29e2"
+                "from": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "to": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "label": "",
+                "style": "dash-line",
+                "id": "69ccdd7e-fc3d-bbde-772-a4946a2737aa"
+            },
+            {
+                "from": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "to": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "label": "",
+                "style": "line",
+                "id": "5b0360a8-5108-6fb-58b3-42c5860defe"
+            },
+            {
+                "from": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "to": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "label": "",
+                "style": "arrow",
+                "id": "f293ecdf-dd21-328c-38b4-764cf69b8eb6"
             }
         ]
+    },
+    "Map1": {
+        "nodes": [
+            {
+                "id": "c611d1c9-7362-20a0-dccc-4664a574f094",
+                "x": -362,
+                "y": -161.875,
+                "label": "a",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            }
+        ],
+        "edges": []
     },
     "oddMap": {
         "nodes": [
@@ -63,7 +107,54 @@
         ]
     },
     "evenMap": {
-        "nodes": [],
-        "edges": []
+        "nodes": [
+            {
+                "id": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "x": -256,
+                "y": -120.875,
+                "label": "one",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "x": -26,
+                "y": -122.875,
+                "label": "two",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            },
+            {
+                "id": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "x": -105,
+                "y": -12.875,
+                "label": "three",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true
+            }
+        ],
+        "edges": [
+            {
+                "from": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "to": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "label": "",
+                "style": "dash-line",
+                "id": "69ccdd7e-fc3d-bbde-772-a4946a2737aa"
+            },
+            {
+                "from": "1e219498-7dfe-58ac-704d-e6407626f6",
+                "to": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "label": "",
+                "style": "line",
+                "id": "5b0360a8-5108-6fb-58b3-42c5860defe"
+            },
+            {
+                "from": "f2fd4ac-4d67-2053-5a08-5e0bc8451f5d",
+                "to": "e5146152-ddf1-a73-1875-ba3f11b0b79e",
+                "label": "",
+                "style": "arrow",
+                "id": "f293ecdf-dd21-328c-38b4-764cf69b8eb6"
+            }
+        ]
     }
 }

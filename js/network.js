@@ -9,6 +9,7 @@ function draw(data) {
   // Vis network needs an object with nodes and edges keys
   // This will determine if an object is provided or not
   // If not, it will just use the new vis.DataSet() defined above
+  console.log(data);
   if (data == undefined) {
     data = {
 	  nodes: nodes,
@@ -23,6 +24,7 @@ function draw(data) {
   var options = {
 	keyboard: true,
 	stabilize: false,
+	// Allows user to move nodes where they please
 	physics: {
 	  barnesHut: {
 		gravitationalConstant:0,
@@ -30,11 +32,12 @@ function draw(data) {
 		centralGravity:0
 	  }
 	},
+	// No pushing other nodes away
 	smoothCurves: {
 	  dynamic:false,
 	  type: "continuous"
 	},
-        
+    // Turns on pre-made toolbar functions
 	dataManipulation: true,
 	onAdd: function(data, callback) {
 	  onAdd(data,callback);
@@ -42,7 +45,7 @@ function draw(data) {
 	onConnect: function(data, callback) {
 	  onConnect(data,callback);
 	}
-  }
+  };
 
   // Create the network and override the main toolbar function
   network = new vis.Network(container, data, options);
@@ -92,14 +95,6 @@ function draw(data) {
 	});
   });
 
-  // Initialize file menu popup
-  $('#filePopup').dialog({
-	minWidth: 200,
-	minHeight: 100,
-    height: 200,
-    modal: true,
-  });
-  $('#filePopup').dialog('close');
 };
 
 /*********************************************************************/
@@ -116,6 +111,7 @@ function onAdd(data, callback) {
 	data.path = path.getAttribute('pathName');
   }
   if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
+	// Must have an http:// to open link correctly
 	linkInput.value = 'http://' + linkInput.value;
   }
 
@@ -129,18 +125,16 @@ function onAdd(data, callback) {
   if (shapeInput.value != 'image') {
 	callback(data);
   }
-  // If there is an image to upload, get the image
-  else {
+  else { // If there is an image to upload, get the image
 	var file = document.getElementById('nodeImage').files[0];
 	console.log(file);
 
 	if (!file.type.match('image.*')) {
-	  //warn user that image is not an image type
+	  // TODO: warn user that image is not an image type
 	}
 
 	var form = new FormData();
 	form.append('img', file, file.name);
-	console.log(form);
 
 	$.ajax({
       url: '/upload/image',
@@ -162,6 +156,7 @@ function onAdd(data, callback) {
 /* Collects the data to create a link                                */
 /*********************************************************************/
 function onConnect(data, callback) {
+  // TODO: change to a dialog?
   if (data.from == data.to) {
     var res = confirm("Do you want to connect the node to itself?");
 	if (!res) {
@@ -217,11 +212,6 @@ function displayResults(result) {
 
   // Event listener for clicking on entry
   $('#searchResult dl').on('click', function (e) {
-    // If not in edit mode, enable. Otherwise it will not let you add a node
-	if (!network.editMode) {
-	  network._toggleEditMode.call(network);
-	}
-	
 	// Call addNode toolbar and pass the path
 	var path = this.getAttribute('pathName');
 	createAddNodeToolbar.call(network, path);
@@ -393,7 +383,7 @@ function createAddNodeToolbar(path) {
 	"<span class='network-manipulationLabel'>Group: </span>" +
 	"<select id='nodeGroup'>" +
 	"<option value='none'>None</option>" +
-	"<option value='new'>New Group</option>" +
+	"<option value='new'>New</option>" +
 	"</select>" +
 	
 	//"<span id='groupWrap' style='display:none'>" +
@@ -464,7 +454,6 @@ function createAddNodeToolbar(path) {
 	}
   });
 
-   
   $("#nodeColor").spectrum({
     color: "#45b5d6",
 	preferredFormat: 'hex',
@@ -563,7 +552,6 @@ function createEditNodeToolbar(data, callback) {
 	var colorInput = $('#nodeColor').spectrum('get')
 	  
 	if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
-	  console.log('Adding HTTP')
 	  linkInput.value = 'http://' + linkInput.value
 	}
 
@@ -783,44 +771,87 @@ $(window).on('message', function(e) {
 })
 */
 
+
 /*********************************************************************/
-/* Creates a pop up for saving and loading                           */
+/* Creates a popup dialog
+/*********************************************************************/
+function createPopup() {
+  $('#filePopup').dialog({
+	minWidth: 350,
+	minHeight: 150,
+    height: 200,
+    modal: true,
+	buttons: { 
+	  Ok: function() {
+	    $(this).dialog("close");
+	  }
+	},
+  });
+}
+
+/*********************************************************************/
+/* Opens a popup for saving and loading                              */
 /*********************************************************************/
 function popup(type) {
-  // TODO: input box from save
-  //ui-dialog-buttonpane
- 
-  $('#filePopup').dialog("option", "title", "sMind Map: " + type);
-	
-  var buttons = [{
-	text: "Cancel",
-	click: function() {
-	  $(this).dialog( "close" );
-	}
-  },
-  {
-    text: type,
-    click: function() {
-	  var input = document.getElementsByClassName("selected");
-	  console.log(input)
-	  //loadMap(input);
-      $(this).dialog( "close" );
-	}
-  }];
-  $('#filePopup').dialog("option", "buttons", buttons);
-  $('#filePopup').dialog("open");
-
-
+  if ( $('#filePopup').length == 1 ) {
+	console.log('CREATE POPUP');
+    createPopup();
+  }
 
   $.ajax({
     type: "GET",
-	url: "data",
+	url: "/data",
 	contentType: "application/json",
 	dataType: "json",
 	success: function (data) {
+      // Add an input box
+	  $('.ui-dialog-buttonpane').prepend("<input type='text' id='mapID' style='margin-top:10px;'>");
+	  
+      var buttons = [{
+	    text: "Cancel",
+	    click: function() {
+	      $(this).dialog( "destroy" );
+	    }
+      },
+      {
+        text: type,
+        click: function() {
+	      var input = document.getElementById("mapID").value;
+	      if (type == "Save") {
+		    saveMap(input, data);
+	      }
+	      else {
+		    loadMap(input, data);
+	      }
+	    }
+      }];
+      $('#filePopup').dialog("option", "buttons", buttons);
+	  $('#filePopup').dialog("option", "title", "sMind Map: " + type);
+
 	  displayMaps(data);
 	}
   });
+}
+
+/*********************************************************************/
+/* Display table of map names                                        */
+/*********************************************************************/
+function displayMaps(data) {
+  var entry = Object.keys(data)
+
+  var html = "";
+  for (var i = 0; i < entry.length; i++) {
+	html += "<tr><td data-entryID='"+entry[i]+"'>" +entry[i]+"</td></tr>"
+  }
+  document.getElementById('mapTable').innerHTML = html;	
+			
+  $('#mapTable tr').click( function(e) {
+	var name = e.target.getAttribute('data-entryID');
+	document.getElementById('mapID').value = name;
+	
+	$(this).siblings().removeClass("selected");
+	$(this).toggleClass("selected");
+  });				
 }
 
 /*********************************************************************/
@@ -833,49 +864,117 @@ function toJSON (obj) {
 /*********************************************************************/
 /* Save map to the server                                            */
 /*********************************************************************/
-function saveMap(val) {
-  console.log(val)
+function saveMap(id, data) {
+  
+  //var fields =  ['id','label','x','y','allowedToMoveX','allowedToMoveY']
   // Get the lists of node and edge objects
-  var data = {
-	nodes: nodes.get({fields: ['id','label','x','y','allowedToMoveX','allowedToMoveY']}),
-	edges: edges.get()
+  var rawData = {
+    nodes: nodes.get(),
+    edges: edges.get()
   };
   var jsonData = toJSON({
-	  name: val,
-	  data: data
+    name: id,
+	data: rawData
   });
+  //console.log(jsonData)
   
-  // Send to server		
-  $.ajax({
-	type: "POST",
-	url: "data/save",
-	contentType: "application/json",
-	dataType: "json",
-	data: jsonData,
-	//on success?
-  });
-};
-
+  // If id already exists, alert to overwrite		
+  if (data[id] !== undefined) {
+	// Replace the popup content
+	$('#mapTable').empty();
+	$('.ui-dialog-content').append("<p id='alert'>Are you sure you want to overwrite this map?</p>");
+	
+	// Replace the buttons
+	$('#mapID').remove();
+	var buttons = { 
+	  Cancel: function() {
+	    // Recreate save popup
+		$('#alert').remove();
+		popup("Save");
+	  },
+	  Okay: function() {		  
+		// Send to server		
+		$.ajax({
+		  type: "POST",
+		  url: "/data/save",
+		  contentType: "application/json",
+		  dataType: "json",
+		  data: jsonData,
+		  success: function () {
+		    $('#filePopup').dialog("destroy");
+		  }
+		});
+	  }
+	};
+    $('#filePopup').dialog("option", "buttons", buttons);
+  }
+  else {
+    // Send to server		
+	$.ajax({
+	  type: "POST",
+	  url: "/data/save",
+	  contentType: "application/json",
+	  dataType: "json",
+	  data: jsonData,
+	  success: function () {
+	    $('#filePopup').dialog("destroy");
+	  }
+	});
+  }
+}
 
 /*********************************************************************/
 /* Load a map from a JSON file                                       */
 /*********************************************************************/
-function loadMap(data) {
-  // Clear the map (needed if currently working on a map)
-  console.log(nodes.get())
-  if (nodes.get() != []) {
-	var res = confirm("Are you sure you want to delete this map?");
-	if (res) {
-		clearMap(); 
+function loadMap(id, data) {
+  console.log(data[id])
+  // If map does not exist
+  if (data[id] == undefined) {
+	// Replace the popup content
+	$('#mapTable').empty();
+	$('.ui-dialog-content').append("<p id='alert'>Map does not exist!</p>");
+	
+	// Replace the buttons
+	$('#mapID').remove();
+	var buttons = { 
+	  Ok: function() {
+	    // Recreate load popup
+	    $('#alert').remove();
+		popup("Load");
+	  },
 	}
-	else {
-		return
-	}
+	$('#filePopup').dialog("option", "buttons", buttons);
   }
-
-  draw(data)
-};
-
+  else {
+	// If map not empty, ask to clear map
+    if (nodes.get().length != 0) { 
+	  // Replace the popup content
+	  $('#mapTable').empty();
+	  $('.ui-dialog-content').append("<p id='alert'>Are you sure you want to load without saving this map?</p>");
+	
+	  // Replace the buttons
+	  $('#mapID').remove();
+	  var buttons = { 
+	    Cancel: function() {
+	      // Recreate save popup
+		  $('#alert').remove();
+		  popup("Load");
+	    },
+	    Okay: function() {		  
+		  nodes.clear();
+		  edges.clear();
+		  $('#filePopup').dialog('destroy');
+		  draw(data[id]);
+	    },
+	  };
+      $('#filePopup').dialog("option", "buttons", buttons);
+    }
+    else {
+	  $('#filePopup').dialog('destroy');
+	  draw(data[id]);
+    }
+  }
+}
 
 /*********************************************************************/
 /* Download a file from disk   										 */
@@ -913,7 +1012,8 @@ function downloadFile () {
 function uploadFile () {
   var file = document.getElementById('loadFile').files[0]
   console.log(file)
-		
+
+  // TODO
   //if (!file.type.match('json.*')) {
     //warn user that image is not an image type
   //}
@@ -929,9 +1029,8 @@ function uploadFile () {
     dataType: 'json',
     processData: false,
     contentType: false, 
-    success: function(res, textStatus, jqXHR) {
-	  console.log("DATA")
-      console.log(res)
+    success: function(data) {
+	  draw(data);
     },
   });	
 }
@@ -941,28 +1040,6 @@ function uploadFile () {
 /*********************************************************************/
 function clearMap() {
 	
-  nodes.clear();
-  edges.clear();
 }
 
-/*********************************************************************/
-/* Display table of map names                                        */
-/*********************************************************************/
-function displayMaps(data) {
-  var entry = Object.keys(data)
-
-  var html = "";
-  for (var i = 0; i < entry.length; i++) {
-	html += "<tr><td data-entryID='"+entry[i]+"'>" +entry[i]+"</td></tr>"
-  }
-  document.getElementById('mapTable').innerHTML = html;	
-			
-  $('#mapTable tr').click( function(e) {
-	//var name = e.target.getAttribute('data-entryID');
-	//document.getElementById('mapID').value = name 
-	
-	$(this).siblings().removeClass("selected");
-	$(this).toggleClass("selected");
-  });				
-}
 
