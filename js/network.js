@@ -1,5 +1,5 @@
-var nodes = new vis.DataSet();
-var edges = new vis.DataSet();
+var nodes = null;
+var edges = null;
 var network = null;
 
 function draw(data) {
@@ -9,16 +9,19 @@ function draw(data) {
   // Vis network needs an object with nodes and edges keys
   // This will determine if an object is provided or not
   // If not, it will just use the new vis.DataSet() defined above
+  //TODO: change to redraw maybe?
   console.log(data);
   if (data == undefined) {
-    data = {
-	  nodes: nodes,
-	  edges: edges
-    };
+	nodes = new vis.DataSet();
+	edges = new vis.DataSet();
   } else {
 	nodes.add(data.nodes);
 	edges.add(data.edges);
   }
+  data = {
+    nodes: nodes,
+    edges: edges
+  };
 
   // Lastly, vis network takes a optional object for options
   var options = {
@@ -53,11 +56,14 @@ function draw(data) {
   network._createManipulatorBar();
 
   // Add event listeners
+  // This will store positions when moved after initial creation
+  network.on('stabilized', function () {
+	network.storePosition();
+  });
   // This just displays selected nodes
   network.on('select', function(params) {
 	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
   });
-  
   // This will open the node link if it exists or
   // show the search results in search bar if it exists
   network.on('doubleClick', function(params) {
@@ -779,6 +785,9 @@ function createPopup() {
   });
 }
 
+/*********************************************************************/
+/* Clears elements in the popup
+/*********************************************************************/
 function clearPopup() {
   $('#mapTable').empty();
   $('#mapID').remove();
@@ -858,7 +867,7 @@ function toJSON (obj) {
 /* Save map to the server                                            */
 /*********************************************************************/
 function saveMap(id, data) { 
-  //var fields =  ['id','label','x','y','allowedToMoveX','allowedToMoveY']
+  var fields =  ['id','label','x','y','allowedToMoveX','allowedToMoveY']
   console.log(nodes.get())
   // Get the lists of node and edge objects
   var rawData = {
@@ -869,7 +878,7 @@ function saveMap(id, data) {
     name: id,
 	data: rawData
   });
-  console.log(jsonData)
+  //console.log(jsonData)
   
   // If id already exists, alert to overwrite		
   if (data[id] !== undefined) {
