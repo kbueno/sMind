@@ -43,7 +43,6 @@ app.get('/data', function(req, res) {
 
 // Post data from the client
 app.post('/data/save', function(req, res) {
-	console.log("SERVER SAVE")
     console.log(req.body);
 	// Create a unique ID and store in data
 	var id = req.body["name"]
@@ -78,7 +77,6 @@ app.post('/download/file', function(req,res) {
 
 // Downloads the file
 app.get('/download/file/:id', function(req, res) {
-	console.log("get download id")
 	// Check if file exists
 	if (tmpData[req.params.id] != undefined) {
 		res.header("Content-Type","application/force-download");

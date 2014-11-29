@@ -95,6 +95,8 @@ function draw(data) {
 	});
   });
 
+  createPopup();
+  $('#filePopup').dialog('close');
 };
 
 /*********************************************************************/
@@ -107,6 +109,11 @@ function onAdd(data, callback) {
   var path = document.getElementById('nodePath');
   var colorInput = $('#nodeColor').spectrum('get');
 
+  data.color = colorInput.toHexString();
+  data.url = linkInput.value;
+  data.shape = shapeInput.value;
+  data.label = labelInput.value;
+	  
   if (path !== null) {
 	data.path = path.getAttribute('pathName');
   }
@@ -115,11 +122,6 @@ function onAdd(data, callback) {
 	linkInput.value = 'http://' + linkInput.value;
   }
 
-  data.color = colorInput.toHexString();
-  data.url = linkInput.value;
-  data.shape = shapeInput.value;
-  data.label = labelInput.value;
-	  
   console.log(data);
 
   if (shapeInput.value != 'image') {
@@ -127,10 +129,18 @@ function onAdd(data, callback) {
   }
   else { // If there is an image to upload, get the image
 	var file = document.getElementById('nodeImage').files[0];
-	console.log(file);
-
-	if (!file.type.match('image.*')) {
-	  // TODO: warn user that image is not an image type
+	var type = file.type.split("/");
+	if (!type[0].match('image')) {
+	  $('.ui-dialog-content').append("<p id='alert'>Flie is not an image.</p>");
+	  var buttons = { 
+	    Ok: function() {
+		  clearPopup();
+          $('#filePopup').dialog('close');
+	    },
+	  }
+	  $('#filePopup').dialog("option", "buttons", buttons);
+	  $('#filePopup').dialog("open");
+	  return;
 	}
 
 	var form = new FormData();
@@ -156,22 +166,32 @@ function onAdd(data, callback) {
 /* Collects the data to create a link                                */
 /*********************************************************************/
 function onConnect(data, callback) {
-  // TODO: change to a dialog?
-  if (data.from == data.to) {
-    var res = confirm("Do you want to connect the node to itself?");
-	if (!res) {
-	  return;
-	}
-  }
-
   var labelInput = document.getElementById('edgeLabel');
   var typeInput = document.getElementById('edgeType');
 	  
   data.label = labelInput.value;
   data.style = typeInput.value;
 	  
-  console.log(data);
-  callback(data);
+  if (data.from == data.to) {
+	$('.ui-dialog-content').append("<p id='alert'>Do you want to connect the node to itself?</p>");
+    var buttons = { 
+      Cancel: function() {
+		  clearPopup();
+          $('#filePopup').dialog('close');
+		  return;
+	  },
+	  Ok: function() {
+	    clearPopup();
+        $('#filePopup').dialog('close');
+		callback(data)
+	  },
+	}
+	$('#filePopup').dialog("option", "buttons", buttons);
+	$('#filePopup').dialog("open");
+  }
+  else {	  
+    callback(data);
+  }
 }
 	
 /*********************************************************************/
@@ -256,7 +276,7 @@ _createManipulatorBar = function() {
   network.editMode = true;
   // Edit options Button
   network.manipulationDiv.innerHTML = "" +
-      "<span class='network-manipulationUI save' id='network-manipulate-saveMap' title='Save'></span>" +
+      "<span class='network-manipulationUI save' id='network-manipulate-file' title='File'></span>" +
 	  
 	  "<span id='menuWrap' style='display:none;'>" +
 	  "<ul id='fileMenu'>" +
@@ -295,12 +315,14 @@ _createManipulatorBar = function() {
     }
 
     // bind the icons
-	var saveMapButton = document.getElementById("network-manipulate-saveMap");
-	saveMapButton.onclick = function () { 
-		$('#fileMenu').menu();
-		$('#menuWrap').show(); 
+	$('#fileMenu').menu();
+	var fileButton = document.getElementById("network-manipulate-file");
+	fileButton.onclick = function () { 
+	  $('#menuWrap').show(); 
 	};
-	$('#fileMenu').mouseleave(function(){ $('#menuWrap').hide() }); 
+	$('#fileMenu').mouseleave(function() { 
+		$('#menuWrap').hide() 
+	}); 
 	
 	var saveToDisk = document.getElementById("saveToDisk");
 	saveToDisk.onclick = downloadFile.bind(this);
@@ -308,13 +330,14 @@ _createManipulatorBar = function() {
 	saveToSmind.onclick = popup.bind(this, "Save");
 	var loadFromDisk = document.getElementById("loadFromDisk");
 	loadFromDisk.onclick = function () {
-		console.log('onDisk')
-		$('#loadFile').trigger('click');
-		return false;
+      // Call hidden input box	
+	  $('#loadFile').trigger('click');
+	  return false;
 	}
+	// TODO: causes problem when selects a second time
     $('#loadFile').change(function () {
-		console.log("onchange");
-		uploadFile()
+		// When file is chosen from disk
+		uploadFile();
 	});
 	var loadFromSmind = document.getElementById("loadFromSmind");
 	loadFromSmind.onclick = popup.bind(this, "Load");
@@ -655,14 +678,11 @@ function createEditEdgeToolbar() {
 	"<span class='network-manipulationLabel'>" + 
 	network.constants.labels['editEdgeDescription'] + "</span></span>";
  
-  
   document.getElementById('edgeLabel').value = network.edgeBeingEdited.label
   
   var type = document.getElementById('edgeType');
   $(type).val(network.edgeBeingEdited.options.style).change()
    
-  console.log(network.edgeBeingEdited.id)
-
   // Bind the save button
   var saveButton = document.getElementById("edit-edge-button");
   $(saveButton).on('click', function() {
@@ -704,8 +724,6 @@ function createEditEdgeToolbar() {
 /*********************************************************************/
 /* ZoomFit Button                                                    */
 /*********************************************************************/
-// TODO: Fix exponential zooming out...
-// maybe try network.zoomExtent(true)
 function onZoomFit() {
 	network.zoomExtent(true)
 }
@@ -745,34 +763,6 @@ _editNode = function() {
 };
 
 /*********************************************************************/
-/* Creates a pop up for saving and loading                           */
-/*********************************************************************/
-/*
-function popup(url, type) {
-	newwindow=window.open(url,type,'height=400,width=400,top=400,left=400');
-	if (window.focus) {newwindow.focus()}
-	return false;
-}
-*/
-
-/*********************************************************************/
-/* Handles the response from the pop up                              */
-/* Calls the appropriate functions                                   */ 
-/*********************************************************************/
-/*
-$(window).on('message', function(e) {
-	var data = e.originalEvent.data
-	if (data.name == 'load') {
-		loadMap(data)
-	}
-	else {
-		saveMap(data.id)
-	}
-})
-*/
-
-
-/*********************************************************************/
 /* Creates a popup dialog
 /*********************************************************************/
 function createPopup() {
@@ -783,21 +773,22 @@ function createPopup() {
     modal: true,
 	buttons: { 
 	  Ok: function() {
-	    $(this).dialog("close");
+	    $(this).dialog("destroy");
 	  }
 	},
   });
+}
+
+function clearPopup() {
+  $('#mapTable').empty();
+  $('#mapID').remove();
+  $('#alert').remove();
 }
 
 /*********************************************************************/
 /* Opens a popup for saving and loading                              */
 /*********************************************************************/
 function popup(type) {
-  if ( $('#filePopup').length == 1 ) {
-	console.log('CREATE POPUP');
-    createPopup();
-  }
-
   $.ajax({
     type: "GET",
 	url: "/data",
@@ -810,7 +801,8 @@ function popup(type) {
       var buttons = [{
 	    text: "Cancel",
 	    click: function() {
-	      $(this).dialog( "destroy" );
+		  clearPopup();
+	      $('#filePopup').dialog("close");
 	    }
       },
       {
@@ -827,6 +819,7 @@ function popup(type) {
       }];
       $('#filePopup').dialog("option", "buttons", buttons);
 	  $('#filePopup').dialog("option", "title", "sMind Map: " + type);
+      $('#filePopup').dialog("open");
 
 	  displayMaps(data);
 	}
@@ -864,9 +857,9 @@ function toJSON (obj) {
 /*********************************************************************/
 /* Save map to the server                                            */
 /*********************************************************************/
-function saveMap(id, data) {
-  
+function saveMap(id, data) { 
   //var fields =  ['id','label','x','y','allowedToMoveX','allowedToMoveY']
+  console.log(nodes.get())
   // Get the lists of node and edge objects
   var rawData = {
     nodes: nodes.get(),
@@ -876,20 +869,16 @@ function saveMap(id, data) {
     name: id,
 	data: rawData
   });
-  //console.log(jsonData)
+  console.log(jsonData)
   
   // If id already exists, alert to overwrite		
   if (data[id] !== undefined) {
-	// Replace the popup content
-	$('#mapTable').empty();
+	// Replace current popup
+	clearPopup();
 	$('.ui-dialog-content').append("<p id='alert'>Are you sure you want to overwrite this map?</p>");
-	
-	// Replace the buttons
-	$('#mapID').remove();
 	var buttons = { 
 	  Cancel: function() {
-	    // Recreate save popup
-		$('#alert').remove();
+		clearPopup();
 		popup("Save");
 	  },
 	  Okay: function() {		  
@@ -901,7 +890,8 @@ function saveMap(id, data) {
 		  dataType: "json",
 		  data: jsonData,
 		  success: function () {
-		    $('#filePopup').dialog("destroy");
+			clearPopup();
+		    $('#filePopup').dialog("close");
 		  }
 		});
 	  }
@@ -917,7 +907,8 @@ function saveMap(id, data) {
 	  dataType: "json",
 	  data: jsonData,
 	  success: function () {
-	    $('#filePopup').dialog("destroy");
+		clearPopup();
+	    $('#filePopup').dialog("close");
 	  }
 	});
   }
@@ -927,19 +918,14 @@ function saveMap(id, data) {
 /* Load a map from a JSON file                                       */
 /*********************************************************************/
 function loadMap(id, data) {
-  console.log(data[id])
   // If map does not exist
   if (data[id] == undefined) {
-	// Replace the popup content
-	$('#mapTable').empty();
+	// Replace the current popup
+	clearPopup();
 	$('.ui-dialog-content').append("<p id='alert'>Map does not exist!</p>");
-	
-	// Replace the buttons
-	$('#mapID').remove();
 	var buttons = { 
 	  Ok: function() {
-	    // Recreate load popup
-	    $('#alert').remove();
+		clearPopup();
 		popup("Load");
 	  },
 	}
@@ -949,20 +935,17 @@ function loadMap(id, data) {
 	// If map not empty, ask to clear map
     if (nodes.get().length != 0) { 
 	  // Replace the popup content
-	  $('#mapTable').empty();
+	  clearPopup();
 	  $('.ui-dialog-content').append("<p id='alert'>Are you sure you want to load without saving this map?</p>");
-	
-	  // Replace the buttons
-	  $('#mapID').remove();
 	  var buttons = { 
 	    Cancel: function() {
-	      // Recreate save popup
-		  $('#alert').remove();
+		  clearPopup();
 		  popup("Load");
 	    },
 	    Okay: function() {		  
 		  nodes.clear();
 		  edges.clear();
+		  clearPopup();
 		  $('#filePopup').dialog('destroy');
 		  draw(data[id]);
 	    },
@@ -970,6 +953,7 @@ function loadMap(id, data) {
       $('#filePopup').dialog("option", "buttons", buttons);
     }
     else {
+	  clearPopup();
 	  $('#filePopup').dialog('destroy');
 	  draw(data[id]);
     }
@@ -997,9 +981,6 @@ function downloadFile () {
 	dataType: "json",
 	data: jsonData,
 	success: function (res) {
-	  console.log("SAVE DATA");
-	  console.log(res);
-	  
 	  var frame = document.getElementById("downloadFrame")
 	  frame.src = "download/file/"+res.id;
     }
@@ -1011,35 +992,55 @@ function downloadFile () {
 /*********************************************************************/
 function uploadFile () {
   var file = document.getElementById('loadFile').files[0]
-  console.log(file)
-
-  // TODO
-  //if (!file.type.match('json.*')) {
-    //warn user that image is not an image type
-  //}
 
   var form = new FormData();
   form.append('map', file, file.name)
 
-  $.ajax({
-    url: '/upload/file',
-    type: 'POST',
-    data: form,
-    cache: false,
-    dataType: 'json',
-    processData: false,
-    contentType: false, 
-    success: function(data) {
-	  draw(data);
-    },
-  });	
-}
+  // If map not empty, ask to clear map
+  if (nodes.get().length != 0) { 
+    $('.ui-dialog-content').append("<p id='alert'>Are you sure you want to load without saving this map?</p>");
+    var buttons = { 
+      Cancel: function() {
+		clearPopup();
+	    $('#filePopup').dialog('close');
+      },
+      Okay: function() {		  
+	    nodes.clear();
+	    edges.clear();
+		clearPopup();
 
-/*********************************************************************/
-/* TODO: make this work...                                           */
-/*********************************************************************/
-function clearMap() {
-	
+		$.ajax({
+		  url: '/upload/file',
+		  type: 'POST',
+		  data: form,
+		  cache: false,
+		  dataType: 'json',
+		  processData: false,
+		  contentType: false, 
+		  success: function(data) {
+	        $('#filePopup').dialog('destroy');
+		    draw(data);
+		  },
+		  // TODO: error?
+		});	
+      },
+    };
+    $('#filePopup').dialog("option", "buttons", buttons);
+    $('#filePopup').dialog("open");
+  }
+  else {
+    $.ajax({
+      url: '/upload/file',
+      type: 'POST',
+      data: form,
+      cache: false,
+      dataType: 'json',
+      processData: false,
+      contentType: false, 
+      success: function(data) {
+	    draw(data);
+      },
+    });
+  }
 }
-
 

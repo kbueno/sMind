@@ -25,7 +25,7 @@ Desc: Used as a proxy
 SetUp
 =================
 
-(1) install 'npm' and 'node' and ImageMagick and GraphicsMagick
+(1) install 'npm' and 'node' and 'ImageMagick' and 'GraphicsMagick'
 (2) run 'npm init'
 (3) run 'npm start'
 
