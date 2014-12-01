@@ -25,19 +25,21 @@
 		<div id="searchDiv" class="searchDiv">
 		  <form id="searchForm" action="" method="">
 		    <input type="hidden" name="wt" value="json">
-		    <table>
-			  <tr>
-		        <td>search</td>
-		        <td><input type="text" id="search-id" name="q" value="*:*"></td>
-		        <td><button id="submitButton">Submit</button></td>
-		      </tr>
-			  <tr>
-				<td><input type="checkbox" id="title" value="title">Title</td>
-				<td><input type="checkbox" id="author" value="author">Author</td>
-				<td><input type="checkbox" id="text" value="text">Text</td>
-			  </tr>
-		    </table>
-	      </form>
+		    
+			<input type="text" id="searchID" name="q" value="*:*">
+		    <button id="submitButton">search</button>
+			<br>
+			
+			<input type="checkbox" id="title" value="title">Title</td>
+			<input type="checkbox" id="author" value="author">Author</td>
+			<input type="checkbox" id="text" value="text">Text</td>
+		    <br>
+		
+			<label for="from"> From</label>
+			<input type="text" id="searchRangeFrom" name="from" class="searchDateRange">
+			<label for="to">to</label>
+			<input type="text" id="searchRangeTo" name="to" class="searchDateRange">  
+	    </form>
 	
 		  <ul id="searchResult"></ul>
 		</div>
