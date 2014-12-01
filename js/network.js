@@ -85,10 +85,124 @@ function draw(data) {
   });
 
   // This handles the submit button for the search bar
-  var submitButtom = document.getElementById('submitButton');
-  $(submitButton).on('click', function(e) {
+  $('#searchButton').on('click', function(e) {
+	searchQuery(e);
+  });
+
+  createPopup();
+  $('#filePopup').dialog('close');
+};
+
+/*********************************************************************/
+/* Sets up a query string based on search fields                     */
+/*********************************************************************/
+/*
+function searchQuery(e) {
+  e.preventDefault();
+  var input = $('#searchForm').serialize();
+  var fieldStr = "";
+  var s = "";
+  console.log("raw query: "+input.toString());
+  //console.log("params: title="+document.getElementById('title').checked.toString());
+
+  //query all, if the user passes nothing/empty-string (queryprefix with no other parameters)
+  var queryPrefix = "wt=json&q=";
+  if(input == queryPrefix){
+    input += "*";  // query = *:*
+  }
+
+  //an advanced user may enter a raw query in the search bar, so catch that here and 
+  //pass their input directly. The user is on their own making sure the query is valid, 
+  //else we'll just not return anything. Test this by entering 'select?q=' before your 
+  //query in the search bar. Example: 'select?q=text:Client'
+  
+  //check if query starts with 'select?q='
+  var selectStr = "select%3Fq%3D";
+  if(input.lastIndexOf(selectStr) != -1){ 
+    console.log("if...");
+    // 'select?q=' is just an anchor for signaling a manual search. 
+	// all we need is to get the query substring from the input and pass it directly
+    var endQueryIndex = input.lastIndexOf(selectStr);
+    var queryParams = input.slice(endQueryIndex+selectStr.length,input.length);
+    //console.log("slice: "+queryParams);
+    query = queryPrefix + queryParams;
+    //console.log("new query: "+input+" end q index="+endQueryIndex);
+  }
+  else{
+    console.log("else... input = "+input);
+
+    //get the actual query, minus the default prefix
+    var query = input.slice(queryPrefix.length,input.length);
+    console.log(" parsed query: "+query);
+
+    var titleCheckBox = document.getElementById('title');
+    var authorCheckBox = document.getElementById('author');
+    var textCheckBox = document.getElementById('text');
+    //TODO dateRange not yet defined
+    var dateRange = document.getElementById('date');
+
+    //build list of parameters, each appended with the query terms given by the user.
+    //Example: (title and author checked, user enters "Salinger"):  
+	// 'q=title:Salinger OR author:Salinger'
+    var paramList = [];
+    //if no fields are checked, query the text field by default
+    if(!titleCheckBox.checked && !authorCheckBox.checked && !textCheckBox.checked){
+      paramList[paramList.length] = "text:"+query; 
+    }
+    if(titleCheckBox.checked){
+      paramList[paramList.length] = "title:"+query;
+    }
+    if(authorCheckBox.checked){
+      paramList[paramList.length] = "author:"+query;
+    }
+    if(textCheckBox.checked){
+      paramList[paramList.length] = "text:"+query;
+    }
+    if(dateRange != null && dateRange.checked){
+      //TODO
+    }
+
+    //now construct a complete query string of OR'ed parameters from the list
+    for(var i = 0; i < paramList.length; i++){
+      if(i == 0){
+        query = paramList[i];        
+      }
+      else{  //subsequent terms after the first one need to be prefixed with 'OR'
+        query += " OR " + paramList[i];
+      }
+    }
+    query = queryPrefix + query;
+    console.log("constructed query, with params: "+query);
+  }
+
+  //error check: query strings cannot contain wildcard 
+  // * if we want highlighted terms, since every term will match *!
+  //This error is usually indicated by solr throwing a TooManyClauses error on the server side
+  if(query.search("%2A") != -1){
+    //finally, append highlighting parameters to the user-query. 
+	//This must be done even for manual-user queries, since our displayResults
+    //function expects highlighting. 
+	//TODO: get displayResults to check for highlights before expecting them.
+    query += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
+  }
+
+  query += "&fl=title,author,text,lastModified,id";
+  console.log("passing query: "+query);
+  $.ajax({
+    url: "http://localhost:8983/solr/collection1/select",
+    dataType: "json",
+    data: query,
+    success: function(response) {
+      displayResults(response);
+	}
+  });
+}
+*/
+
+function searchQuery(e) {
 	e.preventDefault();
 	var input = $('#searchForm').serialize();
+	console.log(input)
 	//appends highlighting parameters to the user-query
 	input += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
 	
@@ -100,12 +214,7 @@ function draw(data) {
 		displayResults(res);
 	  }
 	});
-  });
-
-  createPopup();
-  $('#filePopup').dialog('close');
-};
-
+}
 
 /*********************************************************************/
 /* Displays the results from a search query                          */

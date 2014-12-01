@@ -14,6 +14,28 @@
 	<script type="text/javascript" src="libs/spectrum/spectrum.js"></script>
 	<script type="text/javascript" src="libs/jquery-ui/jquery-ui.js"></script>
 
+  <script>
+  $(function() {
+    $( "#from" ).datepicker({
+      defaultDate: "+1w",
+      changeMonth: true,
+      numberOfMonths: 1,
+	  dateFormat: "yy-mm-dd",
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#to" ).datepicker({
+      defaultDate: "+1w",
+      changeMonth: true,
+      numberOfMonths: 1,
+	  dateFormat: "yy-mm-dd",
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+  });
+  </script>
   </head>
 
   <body onload="draw();">
@@ -27,7 +49,7 @@
 		    <input type="hidden" name="wt" value="json">
 		    
 			<input type="text" id="searchID" name="q" value="*:*">
-		    <button id="submitButton">search</button>
+		    <button id="searchButton">Search</button>
 			<br>
 			
 			<input type="checkbox" id="title" value="title">Title</td>
@@ -39,12 +61,12 @@
 			<input type="text" id="searchRangeFrom" name="from" class="searchDateRange">
 			<label for="to">to</label>
 			<input type="text" id="searchRangeTo" name="to" class="searchDateRange">  
-	    </form>
+	      </form>
 	
 		  <ul id="searchResult"></ul>
-		</div>
-		 
+		</div>	 
 	</div>
+	
 	<br>
     <p id="selection"></p>
 
