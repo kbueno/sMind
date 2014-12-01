@@ -1,1 +1,150 @@
-{}
+{
+    "123": {
+        "nodes": [
+            {
+                "id": "37c9901-bfef-511-d7f5-c83e4db49509",
+                "x": -312,
+                "y": -99,
+                "label": "1",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "f347311-2446-2961-9ede-cfa72b923a38",
+                "x": -29,
+                "y": -108,
+                "label": "2",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "d0519766-e1bb-8f11-2b61-7ea5cb9dd4cc",
+                "x": -79,
+                "y": -13,
+                "label": "3",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "82cb20df-71f7-b8c1-a7e7-e30afb9a4aa7",
+                "x": -751,
+                "y": -317,
+                "label": "4",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            }
+        ],
+        "edges": [
+            {
+                "from": "37c9901-bfef-511-d7f5-c83e4db49509",
+                "to": "f347311-2446-2961-9ede-cfa72b923a38",
+                "label": "",
+                "style": "line",
+                "id": "19967fbc-915e-4a3b-a5e3-e4b59d5c7a"
+            },
+            {
+                "from": "f347311-2446-2961-9ede-cfa72b923a38",
+                "to": "d0519766-e1bb-8f11-2b61-7ea5cb9dd4cc",
+                "label": "",
+                "style": "line",
+                "id": "600b71e6-ced-c08f-a2c9-a2d9109cbc84"
+            }
+        ]
+    },
+    "abc": {
+        "nodes": [
+            {
+                "id": "2e29f888-f066-a5f1-fa58-719c95e98bf6",
+                "x": -382,
+                "y": -154.875,
+                "label": "a",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "6813f42a-46ee-2642-e0c9-f5d3e89f81c9",
+                "x": -122,
+                "y": -153.875,
+                "label": "b",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "abee49fc-1c6c-cd8d-559-ef0912e635cc",
+                "x": -268,
+                "y": -57.875,
+                "label": "c",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "url": "",
+                "shape": "ellipse"
+            }
+        ],
+        "edges": [
+            {
+                "from": "2e29f888-f066-a5f1-fa58-719c95e98bf6",
+                "to": "6813f42a-46ee-2642-e0c9-f5d3e89f81c9",
+                "label": "",
+                "style": "line",
+                "id": "34a890bf-e00d-a848-f9c0-10ab36ed354"
+            }
+        ]
+    },
+    "colors": {
+        "nodes": [
+            {
+                "id": "7581867e-881-2561-1320-298c97614e56",
+                "x": -307,
+                "y": -106,
+                "label": "",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#bf5012",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "1eb7aa13-bec3-8c4e-be-211d9732312d",
+                "x": -158,
+                "y": -39,
+                "label": "",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#d645b7",
+                "url": "",
+                "shape": "ellipse"
+            },
+            {
+                "id": "ec0de29-fe5a-5a0c-b977-603284a8f67a",
+                "x": 18,
+                "y": -137,
+                "label": "",
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#0ed0b7",
+                "url": "",
+                "shape": "ellipse"
+            }
+        ],
+        "edges": []
+    }
+}

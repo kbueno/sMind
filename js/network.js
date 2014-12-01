@@ -77,8 +77,12 @@ function draw(data) {
 		console.log("there is a doc");
 		// search for path
 	  }
-	  if (node.url != "") {
-		window.open(node.url, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
+	  if (node.link != "") {
+		// Must have an http:// to open link correctly
+        if (node.link.indexOf('http://') == -1) {
+	      node.link = 'http://' + node.link;
+        }
+		window.open(node.link, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	}	
   });
@@ -105,68 +109,6 @@ function draw(data) {
   $('#filePopup').dialog('close');
 };
 
-/*********************************************************************/
-/* Collects the data to create a node                                */
-/*********************************************************************/
-function onAdd(data, callback) {
-  var shapeInput = document.getElementById('nodeShape');
-  var labelInput = document.getElementById('nodeLabel');
-  var linkInput = document.getElementById('nodeURL');
-  var path = document.getElementById('nodePath');
-  var colorInput = $('#nodeColor').spectrum('get');
-
-  data.color = colorInput.toHexString();
-  data.url = linkInput.value;
-  data.shape = shapeInput.value;
-  data.label = labelInput.value;
-	  
-  if (path !== null) {
-	data.path = path.getAttribute('pathName');
-  }
-  if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
-	// Must have an http:// to open link correctly
-	linkInput.value = 'http://' + linkInput.value;
-  }
-
-  console.log(data);
-
-  if (shapeInput.value != 'image') {
-	callback(data);
-  }
-  else { // If there is an image to upload, get the image
-	var file = document.getElementById('nodeImage').files[0];
-	var type = file.type.split("/");
-	if (!type[0].match('image')) {
-	  $('.ui-dialog-content').append("<p id='alert'>Flie is not an image.</p>");
-	  var buttons = { 
-	    Ok: function() {
-		  clearPopup();
-          $('#filePopup').dialog('close');
-	    },
-	  }
-	  $('#filePopup').dialog("option", "buttons", buttons);
-	  $('#filePopup').dialog("open");
-	  return;
-	}
-
-	var form = new FormData();
-	form.append('img', file, file.name);
-
-	$.ajax({
-      url: '/upload/image',
-      type: 'POST',
-      data: form,
-      cache: false,
-      dataType: 'json',
-      processData: false,
-      contentType: false, 
-      success: function(res) {
-		data.image = res.imagePath;
-		callback(data);
-      },
-    });	
-  }
-}
 
 /*********************************************************************/
 /* Collects the data to create a link                                */
@@ -282,15 +224,15 @@ _createManipulatorBar = function() {
   network.editMode = true;
   // Edit options Button
   network.manipulationDiv.innerHTML = "" +
-      "<span class='network-manipulationUI save' id='network-manipulate-file' title='File'></span>" +
+      "<span class='network-manipulationUI file' id='networkFile' title='File'></span>" +
 	  
 	  "<span id='menuWrap' style='display:none;'>" +
 	  "<ul id='fileMenu'>" +
-		"<li><span class='save'></span>Save<ul class='menuOption'>" +
+		"<li>Save<ul class='fileMenuOption'>" +
 			"<li id='saveToDisk'>To Disk</li><input type='file' id='saveFile' style='display:none;'>" +
 			"<li id='saveToSmind'>To sMind</li>" +
 		"</ul></li>" +
-		"<li><span class='load'></span>Load<ul class='menuOption'>" +
+		"<li>Load<ul class='fileMenuOption'>" +
 			"<li id='loadFromDisk'>From Disk</li><input type='file' id='loadFile' style='display:none;'>" +
 			"<li id='loadFromSmind'>From sMind</li>" +
 		"</ul></li>" +
@@ -298,31 +240,31 @@ _createManipulatorBar = function() {
 	  "</span>" +
 
 	  "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI zoomFit' id='network-manipulate-zoomFit' title='Zoom Fit'></span>" +
+      "<span class='network-manipulationUI zoomFit' id='networkZoomFit' title='Zoom Fit'></span>" +
 	  "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI add' id='network-manipulate-addNode' title='Add Node'></span>" +
+      "<span class='network-manipulationUI add' id='networkAddNode' title='Add Node'></span>" +
 	  "<div class='network-seperatorLine'></div>" +
-      "<span class='network-manipulationUI connect' id='network-manipulate-connectNode' title='Connect Node'></span>";
+      "<span class='network-manipulationUI connect' id='networkConnectNode' title='Connect Node'></span>";
     
 	if (network._getSelectedNodeCount() == 1) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
-        "<span class='network-manipulationUI edit' id='network-manipulate-editNode' title='Edit Node'></span>";
+        "<span class='network-manipulationUI edit' id='networkEditNode' title='Edit Node'></span>";
     }
     else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
-        "<span class='network-manipulationUI edit' id='network-manipulate-editEdge' title='Edit Edge'></span>";
+        "<span class='network-manipulationUI edit' id='networkEditEdge' title='Edit Edge'></span>";
     }
     if (network._selectionIsEmpty() == false) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
-        "<span class='network-manipulationUI delete' id='network-manipulate-delete' title='Delete'></span>";
+        "<span class='network-manipulationUI delete' id='networkDelete' title='Delete'></span>";
     }
 
     // bind the icons
 	$('#fileMenu').menu();
-	var fileButton = document.getElementById("network-manipulate-file");
+	var fileButton = document.getElementById("networkFile");
 	fileButton.onclick = function () { 
 	  $('#menuWrap').show(); 
 	};
@@ -348,33 +290,29 @@ _createManipulatorBar = function() {
 	var loadFromSmind = document.getElementById("loadFromSmind");
 	loadFromSmind.onclick = popup.bind(this, "Load");
 
-	var zoomFitButton = document.getElementById("network-manipulate-zoomFit");
+	var zoomFitButton = document.getElementById("networkZoomFit");
 	zoomFitButton.onclick = onZoomFit.bind(this);
-    var addNodeButton = document.getElementById("network-manipulate-addNode");
+    var addNodeButton = document.getElementById("networkAddNode");
     addNodeButton.onclick = createAddNodeToolbar.bind(this, undefined);
-    var addEdgeButton = document.getElementById("network-manipulate-connectNode");
+    var addEdgeButton = document.getElementById("networkConnectNode");
     addEdgeButton.onclick = createAddEdgeToolbar.bind(this);
     
 	if (network._getSelectedNodeCount() == 1) {
-      var editButton = document.getElementById("network-manipulate-editNode");
+      var editButton = document.getElementById("networkEditNode");
       editButton.onclick = _editNode.bind(this);
     }
     else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
-      var editButton = document.getElementById("network-manipulate-editEdge");
+      var editButton = document.getElementById("networkEditEdge");
       editButton.onclick = createEditEdgeToolbar.bind(this);
     }
     if (network._selectionIsEmpty() == false) {
-      var deleteButton = document.getElementById("network-manipulate-delete");
+      var deleteButton = document.getElementById("networkDelete");
       deleteButton.onclick = network._deleteSelected.bind(this);
     }
-    var closeDiv = document.getElementById("network-manipulation-closeDiv");
-    closeDiv.onclick = network._toggleEditMode.bind(this);
 
     network.boundFunction = network._createManipulatorBar.bind(this);
     network.on('select', network.boundFunction);
 };
-
-
 
 /*********************************************************************/
 /* Add Node Toolbar													 */
@@ -388,15 +326,17 @@ function createAddNodeToolbar(path) {
 
   // All the HTML for the toolbar goes here
   network.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
+    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
     
-	"<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='nodeLabel' value=''>" +
+	"<input type='button' value='Label' id='label'>" +
+	"<input id='nodeLabel' class='inputLength' value='' style='display:none'>" +
     
-	//"<span id='nodeShape'><span>"+
-	"<select id='nodeShape'>"+
+	"<input type='button' value='Link' id='link' class='toolbarSpacing'>" +
+	"<input id='nodeURL' class='inputLength' value='' style='display:none'>" +
+	
+	"<select id='nodeShape' class='toolbarSpacing'>"+
 	"<option value='ellipse'>Ellipse</option>"+
 	"<option value='image'>Image</option>"+
 	"<option value='box'>Box</option>"+
@@ -404,32 +344,23 @@ function createAddNodeToolbar(path) {
 	"<option value='circle'>Circle</option>"+
 	"<option value='dot'>Dot</option></select>"+
 
-	"<span id='imageWrap' style='display:none'>" +
-	"<input type='file' id='nodeImage'></span>" +
+	"<input type='file' id='loadImage' style='display:none'>" +
+	"<input readonly id='nodeImage' value='' style='display:none' class='inputLength'>" +
 
     "<input type='text' id='nodeColor'/>" +
 	
-	"<span class='network-manipulationLabel'>Group: </span>" +
-	"<select id='nodeGroup'>" +
+	"<select id='nodeGroup' class='toolbarSpacing'>" +
+	"<option value='none'>Group</option>" +
 	"<option value='none'>None</option>" +
 	"<option value='new'>New</option>" +
 	"</select>" +
 	
 	//"<span id='groupWrap' style='display:none'>" +
-	//"<input id='groupLabel' value='1'></span>" +
-	
-	"<span class='network-manipulationLabel'>Link: </span>" +
-	"<input id='nodeURL' value=''>" +
+	//"<input id='groupLabel' class='inputLength' value='1'></span>" +
 
     "<span class='network-manipulationLabel'>" + 
     network.constants.labels['addDescription'] + "</span></span>";
 
-
-  //TODO!
-  // create shape icon dropdown
-  /*
-  */
-  
   // If a path was provided, then an image is default selected
   if (path != undefined) {
 	// save the path somewhere
@@ -438,24 +369,22 @@ function createAddNodeToolbar(path) {
     title = pathToks[pathToks.length-1]
 		
 	document.getElementById('nodeLabel').value = title
+	$('#nodeLabel').toggle();
+
+	/*
 	var image = document.getElementById('nodeImage')
-	
-	// TODO: change this, or automate this more, or add more...
 	// Determine what kind of image to use
+	// change the shape drop down accordingly
 	if (title.indexOf('.doc') > -1) {
-	  image.value = 'css/img/doc.png'
+	  $('#nodeShape').val('image').change()
 	}
 	else if (title.indexOf('.pdf') > -1) {
-	  image.value = 'css/img/pdf.png'
+	  $('#nodeShape').val('image').change()
 	}
 	else if (title.indexOf('.jpeg') > -1) {
-	  image.value = 'css/img/image.png'
+	  $('#nodeShape').val('image').change()
 	}
-	
-	// change the shape drop down accordingly
-	var shape = document.getElementById('nodeShape')
-	$(shape).val('image').change()
-	$('#imageWrap').show()
+	*/
   }
 
   /*
@@ -471,15 +400,36 @@ function createAddNodeToolbar(path) {
   });
   */
 
+  $('#label').on('click', function() {
+	$('#nodeLabel').toggle();
+  });
+  
+  $('#link').on('click', function() {
+	$('#nodeURL').toggle();
+  });
+  
+  $('#nodeImage').on('click', function() {
+    // Call hidden input box	
+	$('#loadImage').trigger('click');
+	return false;
+  });
+
+  $('#loadImage').change(function () {
+    // When file is chosen from disk
+	var file = document.getElementById('loadImage').files[0];
+	document.getElementById('nodeImage').value = file.name;
+  });
+
   // Shape event listener
   var shape = document.getElementById('nodeShape');
   $(shape).on('click', function () {
 	// If image shape is selected, show URL input box
 	if (shape.value == 'image') {
-		$('#imageWrap').show()
+		$('#nodeImage').show();
 	}
 	else {
-		$('#imageWrap').hide()
+		$('#nodeImage').val('')
+		$('#nodeImage').hide();
 	}
   });
 
@@ -490,18 +440,78 @@ function createAddNodeToolbar(path) {
   });
 
   // Bind the back button
-  var backButton = document.getElementById("network-manipulate-back");
+  var backButton = document.getElementById("networkBack");
   backButton.onclick = network._createManipulatorBar.bind(this);
 
   // We use the boundFunction so we can reference it when we unbind it from the "select" event.
+  // TODO: update addNode to be like editNodefunc
   network.boundFunction = network._addNode.bind(this);
   network.on('select', network.boundFunction);
 };
 
 /*********************************************************************/
+/* Collects the data to create a node                                */
+/*********************************************************************/
+function onAdd(data, callback) {
+  var shapeInput = document.getElementById('nodeShape');
+  var labelInput = document.getElementById('nodeLabel');
+  var linkInput = document.getElementById('nodeURL');
+  var path = document.getElementById('nodePath');
+  var colorInput = $('#nodeColor').spectrum('get');
+
+  data.color = colorInput.toHexString();
+  data.link = linkInput.value;
+  data.shape = shapeInput.value;
+  data.label = labelInput.value;
+	  
+  if (path !== null) {
+	data.path = path.getAttribute('pathName');
+  }
+
+  console.log(data);
+
+  if (shapeInput.value != 'image') {
+	callback(data);
+  }
+  else { // If there is an image to upload, get the image
+	var file = document.getElementById('loadImage').files[0];
+	var type = file.type.split("/");
+	if (!type[0].match('image')) {
+	  $('.ui-dialog-content').append("<p id='alert'>Flie is not an image.</p>");
+	  var buttons = { 
+	    Ok: function() {
+		  clearPopup();
+          $('#filePopup').dialog('close');
+	    },
+	  }
+	  $('#filePopup').dialog("option", "buttons", buttons);
+	  $('#filePopup').dialog("open");
+	  return;
+	}
+
+	var form = new FormData();
+	form.append('img', file, file.name);
+
+	$.ajax({
+      url: '/upload/image',
+      type: 'POST',
+      data: form,
+      cache: false,
+      dataType: 'json',
+      processData: false,
+      contentType: false, 
+      success: function(res) {
+		data.image = res.imagePath;
+		callback(data);
+      },
+    });	
+  }
+}
+
+/*********************************************************************/
 /* Edit Node Toolbar                                                 */
 /*********************************************************************/
-function createEditNodeToolbar(data, callback) {
+function createEditNodeToolbar(data) {
   // Clear whatever toolbar was being used in order to create this one
   network._clearManipulatorBar();
   if (network.boundFunction) {
@@ -510,54 +520,80 @@ function createEditNodeToolbar(data, callback) {
 
   // All the HTML for the toolbar goes here
   network.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
+    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
-    "<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='nodeLabel' value=''>" +
     
-	"<span class='network-manipulationLabel'>Shape: </span>" +
-	"<select id='nodeShape'>"+
+	"<input type='button' value='Label' id='label'>" +
+	"<input id='nodeLabel' class='inputLength' value='' style='display:none'>" +
+    
+	"<input type='button' value='Link' id='link' class='toolbarSpacing'>" +
+	"<input id='nodeURL' class='inputLength' value='' style='display:none'>" +
+	
+	"<select id='nodeShape' class='toolbarSpacing'>"+
 	"<option value='ellipse'>Ellipse</option>"+
 	"<option value='image'>Image</option>"+
 	"<option value='box'>Box</option>"+
 	"<option value='database'>Database</option>"+
 	"<option value='circle'>Circle</option>"+
 	"<option value='dot'>Dot</option></select>"+
-	
-	"<span id='imageWrap' style='display:none'>" +
-	"<span class='network-manipulationLabel'>ImageURL: </span>" +
-	"<input id='nodeImage' value=''></span>" +
-	
+
+	"<input type='file' id='loadImage' style='display:none'>" +
+	"<input readonly id='nodeImage' value='' style='display:none' class='inputLength'>" +
+
     "<input type='text' id='nodeColor'/>" +
+	
+	"<select id='nodeGroup' class='toolbarSpacing'>" +
+	"<option value='none'>Group</option>" +
+	"<option value='none'>None</option>" +
+	"<option value='new'>New</option>" +
+	"</select>" +
 
-	"<span class='network-manipulationLabel'>Link: </span>" +
-	"<input id='nodeURL' value='http://'>" +
-
-	"<input type='button' value='save' id='edit-node-button'></button>"+
+	"<input type='button' value='save' id='editNodeButton' class='toolbarSpacing'></button>"+
 	"</span>";
  
   // Set all the defaults
-  document.getElementById('nodeLabel').value = data.label
-  document.getElementById('nodeURL').value = data.url
+  document.getElementById('nodeLabel').value = data.label;
+  document.getElementById('nodeURL').value = data.link;
 
   var shape = document.getElementById('nodeShape');
-  $(shape).val(data.shape).change()
+  $(shape).val(data.shape).change();
   if (shape.value == 'image') {
-	$('#imageWrap').show()
-	document.getElementById('nodeImage').value = data.image	
+	$('#nodeImage').show();
+	var fileName = data.image.split("/");
+	document.getElementById('nodeImage').value = fileName[fileName.length-1];	
   }
 
-  document.getElementById('nodeURL').value = data.url
+  $('#label').on('click', function() {
+	$('#nodeLabel').toggle();
+  });
+  
+  $('#link').on('click', function() {
+	$('#nodeURL').toggle();
+  });
+  
+  $('#nodeImage').on('click', function() {
+    // Call hidden input box	
+	$('#loadImage').trigger('click');
+	return false;
+  });
+
+  $('#loadImage').change(function () {
+    // When file is chosen from disk
+	var file = document.getElementById('loadImage').files[0];
+	document.getElementById('nodeImage').value = file.name;
+  });
 
   // Shape event listener
+  var shape = document.getElementById('nodeShape');
   $(shape).on('click', function () {
 	// If image shape is selected, show URL input box
 	if (shape.value == 'image') {
-		$('#imageWrap').show()
+		$('#nodeImage').show();
 	}
 	else {
-		$('#imageWrap').hide()
+		$('#nodeImage').val('')
+		$('#nodeImage').hide();
 	}
   });
 
@@ -568,29 +604,18 @@ function createEditNodeToolbar(data, callback) {
   });
 
   // Bind the back button
-  var backButton = document.getElementById("network-manipulate-back");
+  var backButton = document.getElementById("networkBack");
   backButton.onclick = network._createManipulatorBar.bind(this);
 
   // Bind the save button
-  var saveButton = document.getElementById("edit-node-button");
+  var saveButton = document.getElementById("editNodeButton");
   $(saveButton).on('click', function() {
-	var labelInput = document.getElementById('nodeLabel');
-	var shapeInput = document.getElementById('nodeShape');
-	var imageInput = document.getElementById('nodeImage');
-	var linkInput = document.getElementById('nodeURL');
-	var colorInput = $('#nodeColor').spectrum('get')
-	  
-	if (linkInput.value != '' && linkInput.value.indexOf('http://') == -1) {
-	  linkInput.value = 'http://' + linkInput.value
-	}
-
-	data.color =  colorInput.toHexString();
-	data.label = labelInput.value;
-	data.shape = shapeInput.value;
-	data.image = imageInput.value;
-	data.url = linkInput.value;
-	  
-	callback(data);
+	onAdd(data, function(finalizedData) {
+	  network.nodesData.update(finalizedData);
+      network._createManipulatorBar();
+      network.moving = true;
+      network.start();
+      });
   });
 }
 
@@ -616,11 +641,11 @@ function createAddEdgeToolbar() {
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
-	"<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='edgeLabel' value=''>" +
 	
-	"<span class='network-manipulationLabel'>Type: </span>" +
-	"<select id='edgeType'>" +
+	"<input type='button' value='Label' id='label'>" +
+	"<input id='edgeLabel' class='inputLength' value='' style='display:none'>" +
+	
+	"<select id='edgeType' class='toolbarSpacing'>" +
 	"<option value='line'>Line</option>" +
 	"<option value='dash-line'>Dash</option>" +
 	"<option value='arrow'>Arrow</option>" +
@@ -629,6 +654,10 @@ function createAddEdgeToolbar() {
     
 	"<span class='network-manipulationLabel'>" + 
 	network.constants.labels['linkDescription'] + "</span></span>";
+
+  $('#label').on('click', function() {
+	$('#edgeLabel').toggle();
+  });
 
   // bind the icon
   var backButton = document.getElementById("network-manipulate-back");
@@ -646,6 +675,34 @@ function createAddEdgeToolbar() {
 
   // redraw to show the unselect
   network._redraw();
+};
+
+/*********************************************************************/
+/* Override edit function, added attributes to pass back like image, */ 
+/* url, etc                                                          */
+/*********************************************************************/
+_editNode = function() {
+    if (this.editMode == true) {
+      var node = this._getSelectedNode();
+	  var custom = this.nodesData.get(node.id);
+      var data = {
+		link: custom.link,
+		path: custom.path,
+		id: node.id,
+        label: node.label,
+        group: node.options.group,
+        shape: node.options.shape,
+		image: node.options.image,
+        color: {
+          background:node.options.color.background,
+          border:node.options.color.border,
+          highlight: {
+            background:node.options.color.highlight.background,
+            border:node.options.color.highlight.border
+          },
+        }};
+      createEditNodeToolbar(data);
+    }
 };
 
 /*********************************************************************/
@@ -669,28 +726,33 @@ function createEditEdgeToolbar() {
     "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
-	"<span class='network-manipulationLabel'>Label: </span>" +
-	"<input id='edgeLabel' value=''>" +
 	
-	"<span class='network-manipulationLabel'>Type: </span>" +
-	"<select id='edgeType'>" +
+	"<input type='button' value='Label' id='label'>" +
+	"<input id='edgeLabel' class='inputLength' value='' style='display:none'>" +
+	
+	"<select id='edgeType' class='toolbarSpacing'>" +
 	"<option value='line'>Line</option>" +
 	"<option value='dash-line'>Dash</option>" +
 	"<option value='arrow'>Arrow</option>" +
 	"<option value='arrow-center'>Arrow2</option>" +
 	"</select>" +
     
-	"<input type='button' value='save' id='edit-edge-button'></button>"+
+	"<input type='button' value='save' id='editEdgeButton' class='toolbarSpacing'></button>"+
+	
 	"<span class='network-manipulationLabel'>" + 
-	network.constants.labels['editEdgeDescription'] + "</span></span>";
+	network.constants.labels['editEdgeDescription'] + 
+	"</span></span>";
  
-  document.getElementById('edgeLabel').value = network.edgeBeingEdited.label
   
-  var type = document.getElementById('edgeType');
-  $(type).val(network.edgeBeingEdited.options.style).change()
+  document.getElementById('edgeLabel').value = network.edgeBeingEdited.label
+  $('#edgeType').val(network.edgeBeingEdited.options.style).change()
    
+  $('#label').on('click', function() {
+	$('#edgeLabel').toggle();
+  });
+
   // Bind the save button
-  var saveButton = document.getElementById("edit-edge-button");
+  var saveButton = document.getElementById("editEdgeButton");
   $(saveButton).on('click', function() {
 	var labelInput = document.getElementById('edgeLabel');
 	var typeInput = document.getElementById('edgeType');
@@ -733,40 +795,6 @@ function createEditEdgeToolbar() {
 function onZoomFit() {
 	network.zoomExtent(true)
 }
-
-/*********************************************************************/
-/* Override edit function, added attributes to pass back like image, */ 
-/* url, etc                                                          */
-/*********************************************************************/
-_editNode = function() {
-    if (this.editMode == true) {
-      var node = this._getSelectedNode();
-	  var custom = this.nodesData.get(node.id);
-      var data = {
-		url: custom.url,
-		path: custom.path,
-		id: node.id,
-        label: node.label,
-        group: node.options.group,
-        shape: node.options.shape,
-		image: node.options.image,
-        color: {
-          background:node.options.color.background,
-          border:node.options.color.border,
-          highlight: {
-            background:node.options.color.highlight.background,
-            border:node.options.color.highlight.border
-          },
-        }};
-      var me = this;
-      createEditNodeToolbar(data, function (finalizedData) {
-	    me.nodesData.update(finalizedData);
-        me._createManipulatorBar();
-        me.moving = true;
-        me.start();
-      });
-    }
-};
 
 /*********************************************************************/
 /* Creates a popup dialog
