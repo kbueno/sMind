@@ -42,9 +42,6 @@ function draw(data) {
 	},
     // Turns on pre-made toolbar functions
 	dataManipulation: true,
-	onAdd: function(data, callback) {
-	  onAdd(data,callback);
-	},
 	onConnect: function(data, callback) {
 	  onConnect(data,callback);
 	}
@@ -110,38 +107,6 @@ function draw(data) {
 };
 
 
-/*********************************************************************/
-/* Collects the data to create a link                                */
-/*********************************************************************/
-function onConnect(data, callback) {
-  var labelInput = document.getElementById('edgeLabel');
-  var typeInput = document.getElementById('edgeType');
-	  
-  data.label = labelInput.value;
-  data.style = typeInput.value;
-	  
-  if (data.from == data.to) {
-	$('.ui-dialog-content').append("<p id='alert'>Do you want to connect the node to itself?</p>");
-    var buttons = { 
-      Cancel: function() {
-		  clearPopup();
-          $('#filePopup').dialog('close');
-		  return;
-	  },
-	  Ok: function() {
-	    clearPopup();
-        $('#filePopup').dialog('close');
-		callback(data)
-	  },
-	}
-	$('#filePopup').dialog("option", "buttons", buttons);
-	$('#filePopup').dialog("open");
-  }
-  else {	  
-    callback(data);
-  }
-}
-	
 /*********************************************************************/
 /* Displays the results from a search query                          */
 /*********************************************************************/
@@ -444,9 +409,24 @@ function createAddNodeToolbar(path) {
   backButton.onclick = network._createManipulatorBar.bind(this);
 
   // We use the boundFunction so we can reference it when we unbind it from the "select" event.
-  // TODO: update addNode to be like editNodefunc
-  network.boundFunction = network._addNode.bind(this);
+  network.boundFunction = addNode.bind(this);
   network.on('select', network.boundFunction);
+};
+
+/*********************************************************************/
+/* Sets the default data to add to the node                          */
+/*********************************************************************/
+function addNode() {
+  if (network._selectionIsEmpty()) {
+    var positionObject = network._pointerToPositionObject(network.pointerPosition);
+    var defaultData = {id:randomUUID(),x:positionObject.left,y:positionObject.top,allowedToMoveX:true,allowedToMoveY:true};
+    onAdd(defaultData, function(finalizedData) {
+      network.nodesData.add(finalizedData);
+      network._createManipulatorBar();
+      network.moving = true;
+      network.start();
+    });
+  }
 };
 
 /*********************************************************************/
@@ -507,6 +487,34 @@ function onAdd(data, callback) {
     });	
   }
 }
+
+/*********************************************************************/
+/* Override edit function, added attributes to pass back like image, */ 
+/* url, etc                                                          */
+/*********************************************************************/
+function _editNode() {
+    if (this.editMode == true) {
+      var node = this._getSelectedNode();
+	  var custom = this.nodesData.get(node.id);
+      var data = {
+		link: custom.link,
+		path: custom.path,
+		id: node.id,
+        label: node.label,
+        group: node.options.group,
+        shape: node.options.shape,
+		image: node.options.image,
+        color: {
+          background:node.options.color.background,
+          border:node.options.color.border,
+          highlight: {
+            background:node.options.color.highlight.background,
+            border:node.options.color.highlight.border
+          },
+        }};
+      createEditNodeToolbar(data);
+    }
+};
 
 /*********************************************************************/
 /* Edit Node Toolbar                                                 */
@@ -615,7 +623,51 @@ function createEditNodeToolbar(data) {
       network._createManipulatorBar();
       network.moving = true;
       network.start();
-      });
+    });
+  });
+}
+
+/*********************************************************************/
+/* Collects the data to create a link                                */
+/*********************************************************************/
+function onConnect(data, callback) {
+  var labelInput = document.getElementById('edgeLabel');
+  var typeInput = document.getElementById('edgeType');
+	  
+  data.label = labelInput.value;
+  data.style = typeInput.value;
+	  
+  if (data.from == data.to) {
+	$('.ui-dialog-content').append("<p id='alert'>Do you want to connect the node to itself?</p>");
+    var buttons = { 
+      Cancel: function() {
+		  clearPopup();
+          $('#filePopup').dialog('close');
+		  return;
+	  },
+	  Ok: function() {
+	    clearPopup();
+        $('#filePopup').dialog('close');
+		callback(data)
+	  },
+	}
+	$('#filePopup').dialog("option", "buttons", buttons);
+	$('#filePopup').dialog("open");
+  }
+  else {	  
+    callback(data);
+  }
+}
+	
+/*********************************************************************/
+/* Sets the defualt data  to connect two nodes with a new edge       */
+/*********************************************************************/
+function createEdge(sourceNodeId,targetNodeId) {
+  var defaultData = {from:sourceNodeId, to:targetNodeId};
+  onConnect(defaultData, function(finalizedData) {
+    network.edgesData.add(finalizedData);
+    network.moving = true;
+    network.start();
   });
 }
 
@@ -638,7 +690,7 @@ function createAddEdgeToolbar() {
 
   // All the HTML for the toolbar goes here
   network.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
+    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
 	
@@ -653,14 +705,15 @@ function createAddEdgeToolbar() {
 	"</select>" +
     
 	"<span class='network-manipulationLabel'>" + 
-	network.constants.labels['linkDescription'] + "</span></span>";
+	network.constants.labels['linkDescription'] + 
+	"</span></span>";
 
   $('#label').on('click', function() {
 	$('#edgeLabel').toggle();
   });
 
   // bind the icon
-  var backButton = document.getElementById("network-manipulate-back");
+  var backButton = document.getElementById("networkBack");
   backButton.onclick = network._createManipulatorBar.bind(this);
 
   // we use the boundFunction so we can reference it when we unbind it from the "select" event.
@@ -678,31 +731,35 @@ function createAddEdgeToolbar() {
 };
 
 /*********************************************************************/
-/* Override edit function, added attributes to pass back like image, */ 
-/* url, etc                                                          */
+/* */
 /*********************************************************************/
-_editNode = function() {
-    if (this.editMode == true) {
-      var node = this._getSelectedNode();
-	  var custom = this.nodesData.get(node.id);
-      var data = {
-		link: custom.link,
-		path: custom.path,
-		id: node.id,
-        label: node.label,
-        group: node.options.group,
-        shape: node.options.shape,
-		image: node.options.image,
-        color: {
-          background:node.options.color.background,
-          border:node.options.color.border,
-          highlight: {
-            background:node.options.color.highlight.background,
-            border:node.options.color.highlight.border
-          },
-        }};
-      createEditNodeToolbar(data);
+function _releaseControlNode(pointer) {
+  var newNode = network._getNodeAt(pointer);
+  if (newNode != null) {
+    if (network.edgeBeingEdited.controlNodes.from.selected == true) {
+      network._editEdge(newNode.id, network.edgeBeingEdited.to.id);
+      network.edgeBeingEdited.controlNodes.from.unselect();
     }
+    if (network.edgeBeingEdited.controlNodes.to.selected == true) {
+      network._editEdge(network.edgeBeingEdited.from.id, newNode.id);
+      network.edgeBeingEdited.controlNodes.to.unselect();
+    }
+  }
+  else {
+    network.edgeBeingEdited._restoreControlNodes();
+  }
+  network.freezeSimulation = false;
+  network._redraw();
+};
+
+/*********************************************************************/
+/* connect two nodes with a new edge.
+/*********************************************************************/
+function editEdge(sourceNodeId,targetNodeId) {
+    var defaultData = {id: network.edgeBeingEdited.id, from:sourceNodeId, to:targetNodeId};
+    network.edgesData.update(finalizedData);
+    network.moving = true;
+    network.start();
 };
 
 /*********************************************************************/
@@ -754,19 +811,17 @@ function createEditEdgeToolbar() {
   // Bind the save button
   var saveButton = document.getElementById("editEdgeButton");
   $(saveButton).on('click', function() {
-	var labelInput = document.getElementById('edgeLabel');
-	var typeInput = document.getElementById('edgeType');
-
-	var data = {
-	  id: network.edgeBeingEdited.id,
-	  label: labelInput.value,
-	  style: typeInput.value
-	}
-	
-    network.edgesData.update(data);
-    network._createManipulatorBar();
-    network.moving = true;
-    network.start();
+    var defaultData = {
+	  id: network.edgeBeingEdited.id, 
+	  from: network.edgeBeingEdited.from.id, 
+	  to: network.edgeBeingEdited.to.id
+	};
+    onConnect(defaultData, function(finalizedData) {	
+      network.edgesData.update(finalizedData);
+      network._createManipulatorBar();
+      network.moving = true;
+      network.start();
+    });
   });
 
   // bind the icon
@@ -1080,4 +1135,25 @@ function uploadFile () {
     });
   }
 }
+
+/**
+ * Create a semi UUID
+ * source: http://stackoverflow.com/a/105074/1262753
+ * @return {String} uuid
+ */
+function randomUUID() {
+  var S4 = function () {
+    return Math.floor(
+        Math.random() * 0x10000 /* 65536 */
+    ).toString(16);
+  };
+
+  return (
+      S4() + S4() + '-' +
+          S4() + '-' +
+          S4() + '-' +
+          S4() + '-' +
+          S4() + S4() + S4()
+      );
+};
 
