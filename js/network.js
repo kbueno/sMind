@@ -9,7 +9,6 @@ function draw(data) {
   // Vis network needs an object with nodes and edges keys
   // This will determine if an object is provided or not
   // If not, it will just use the new vis.DataSet() defined above
-  //TODO: change to redraw maybe?
   console.log(data);
   if (data == undefined) {
 	nodes = new vis.DataSet();
@@ -42,9 +41,7 @@ function draw(data) {
 	},
     // Turns on pre-made toolbar functions
 	dataManipulation: true,
-	onConnect: function(data, callback) {
-	  onConnect(data,callback);
-	}
+	selectable: true
   };
 
   // Create the network and override the main toolbar function
@@ -71,14 +68,16 @@ function draw(data) {
 	  
 	  // TODO: open search result in search bar
 	  if (node.path != undefined) {
-		console.log("there is a doc");
 		// search for path
+		$('#searchResult').empty();
+		document.getElementById('searchID').value = node.path;
 	  }
 	  if (node.link != "") {
 		// Must have an http:// to open link correctly
         if (node.link.indexOf('http://') == -1) {
 	      node.link = 'http://' + node.link;
         }
+	    // TODO: open in seperate window
 		window.open(node.link, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	}	
@@ -88,6 +87,7 @@ function draw(data) {
   $('#searchButton').on('click', function(e) {
 	searchQuery(e);
   });
+  // TODO: clear button?
 
   createPopup();
   $('#filePopup').dialog('close');
@@ -96,14 +96,19 @@ function draw(data) {
 /*********************************************************************/
 /* Sets up a query string based on search fields                     */
 /*********************************************************************/
-/*
 function searchQuery(e) {
   e.preventDefault();
   var input = $('#searchForm').serialize();
   var fieldStr = "";
   var s = "";
-  console.log("raw query: "+input.toString());
-  //console.log("params: title="+document.getElementById('title').checked.toString());
+
+  //get rid of "&from=&to=" junk after call to serialize
+  if(input.indexOf("&from") > -1){
+    input = input.substring(0,input.indexOf("&from"));
+  }
+  if(input.indexOf("&to") > -1){
+    input = input.substring(0,input.indexOf("&to"));
+  }
 
   //query all, if the user passes nothing/empty-string (queryprefix with no other parameters)
   var queryPrefix = "wt=json&q=";
@@ -111,39 +116,34 @@ function searchQuery(e) {
     input += "*";  // query = *:*
   }
 
-  //an advanced user may enter a raw query in the search bar, so catch that here and 
-  //pass their input directly. The user is on their own making sure the query is valid, 
-  //else we'll just not return anything. Test this by entering 'select?q=' before your 
-  //query in the search bar. Example: 'select?q=text:Client'
+  //an advanced user may enter a raw query in the search bar, so catch that here 
+  //and pass their input directly. The user is on their own making sure the query 
+  //is valid, else we'll just not return anything. Test this by entering 
+  //'select?q=' before your query in the search bar. Example: 'select?q=text:Client'
   
   //check if query starts with 'select?q='
   var selectStr = "select%3Fq%3D";
-  if(input.lastIndexOf(selectStr) != -1){ 
-    console.log("if...");
+  if(input.lastIndexOf(selectStr) != -1 || input.lastIndexOf("select?q=") != -1) {
     // 'select?q=' is just an anchor for signaling a manual search. 
 	// all we need is to get the query substring from the input and pass it directly
     var endQueryIndex = input.lastIndexOf(selectStr);
     var queryParams = input.slice(endQueryIndex+selectStr.length,input.length);
-    //console.log("slice: "+queryParams);
     query = queryPrefix + queryParams;
-    //console.log("new query: "+input+" end q index="+endQueryIndex);
+    console.log("manual query: "+input+" end q index="+endQueryIndex);
   }
   else{
-    console.log("else... input = "+input);
-
     //get the actual query, minus the default prefix
     var query = input.slice(queryPrefix.length,input.length);
-    console.log(" parsed query: "+query);
-
-    var titleCheckBox = document.getElementById('title');
+    
+	var titleCheckBox = document.getElementById('title');
     var authorCheckBox = document.getElementById('author');
     var textCheckBox = document.getElementById('text');
-    //TODO dateRange not yet defined
-    var dateRange = document.getElementById('date');
+    var dateBegin = document.getElementById('searchRangeFrom').value;
+    var dateEnd = document.getElementById('searchRangeTo').value;
 
     //build list of parameters, each appended with the query terms given by the user.
     //Example: (title and author checked, user enters "Salinger"):  
-	// 'q=title:Salinger OR author:Salinger'
+	//'q=title:Salinger OR author:Salinger'
     var paramList = [];
     //if no fields are checked, query the text field by default
     if(!titleCheckBox.checked && !authorCheckBox.checked && !textCheckBox.checked){
@@ -158,9 +158,6 @@ function searchQuery(e) {
     if(textCheckBox.checked){
       paramList[paramList.length] = "text:"+query;
     }
-    if(dateRange != null && dateRange.checked){
-      //TODO
-    }
 
     //now construct a complete query string of OR'ed parameters from the list
     for(var i = 0; i < paramList.length; i++){
@@ -173,82 +170,138 @@ function searchQuery(e) {
     }
     query = queryPrefix + query;
     console.log("constructed query, with params: "+query);
+
+    
+    // !! filter queries are appended to the rest of the complete query, 
+	// so only do this AFTER query is fully constructed
+    /*
+      Search by date range. User can enter a begin and end date, or only a begin date 
+	  and we'll search from begin to NOW. Pre-condition: expect date parameters are 
+	  validated internally by the date-class, and formatted in ISO: yyyy-mm-dd.
+      Pad numeric values with zeroes: '1999-01-01' is valid, but '1999-1-1' is not. 
+	  Finally, append the suffix "T00:00:00.000Z" to the string; this is required for 
+	  a given date-range query. Some sources say you can send wildcards in date-range 
+	  queries, such as lastModified:[2010* TO 2014*] but this isn't true. We have to 
+	  send full date strings, like this: 
+	  lastModified:[2010-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z"]
+    */
+    console.log("date range params: begin="+dateBegin.toString()+" end="+dateEnd.toString());
+    if(dateBegin != undefined && dateBegin != null && dateBegin !== "") {
+      var dateSuffix = "T00:00:00.000Z";
+      //now end date, so search from begin parameter to NOW
+      if(dateEnd == undefined || dateEnd == null || dateEnd == ""){
+        query += "&fq=lastModified:["+dateBegin+dateSuffix+" TO NOW]"; 
+      }
+      else {
+        query += "&fq=lastModified:["+dateBegin+dateSuffix+" TO "+dateEnd+dateSuffix+"]";
+      }
+    }
   }
 
   //error check: query strings cannot contain wildcard 
-  // * if we want highlighted terms, since every term will match *!
-  //This error is usually indicated by solr throwing a TooManyClauses error on the server side
-  if(query.search("%2A") != -1){
+  //* if we want highlighted terms, since every term will match *!
+  //This error is usually indicated by solr throwing a TooManyClauses 
+  //error on the server side.
+  if(query.search("%2A") != -1) {
     //finally, append highlighting parameters to the user-query. 
 	//This must be done even for manual-user queries, since our displayResults
-    //function expects highlighting. 
+    //function expects highlighting.
 	//TODO: get displayResults to check for highlights before expecting them.
     query += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
   }
 
   query += "&fl=title,author,text,lastModified,id";
   console.log("passing query: "+query);
-  $.ajax({
-    url: "http://localhost:8983/solr/collection1/select",
-    dataType: "json",
-    data: query,
-    success: function(response) {
-      displayResults(response);
-	}
-  });
-}
-*/
-
-function searchQuery(e) {
-	e.preventDefault();
-	var input = $('#searchForm').serialize();
-	console.log(input)
-	//appends highlighting parameters to the user-query
-	input += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
-	
 	$.ajax({
 	  url: "http://localhost:7777/solr/collection1/select",
 	  dataType: "json",
-	  data: input,
-	  success: function(res) {
-		displayResults(res);
+	  data: query,
+	  success: function(response) {
+		displayResults(response);
 	  }
-	});
+	})
 }
 
-/*********************************************************************/
-/* Displays the results from a search query                          */
-/*********************************************************************/
+/*********************************************************************
+  Displays the results from a search query                          
+
+  Instead of displaying "not found" for empty fields below, we could
+  just not display those fields. It depends whether we want a static
+  set of fields, or allow fields to be displayed only if they exist.
+*********************************************************************/
 function displayResults(result) {
   var data = result.response
-  console.log(data)
-  // The hit highlights are a separate object in the response 
-  // (separate from the docs object)
-  var highlights = result.highlighting;
+  console.log(data);
    
   // Format results in HTML
-  var html = ""
-  for(var i = 0; i < data.docs.length; i++) {
+  var html = "";
+
+  //state nresults found
+  if(data.docs.length == 0) {
+    html += "<i>No results found</i>";
+  }
+  else if(data.docs.length == 1){
+    html += "<i>1 result</i>";
+  }
+  else {
+    html += "<i>"+data.docs.length.toString()+" results</i>";
+  }
+
+  for(var i = 0; i < data.docs.length; i++){
     var entry = data.docs[i];
-    var highlightStr = highlights[entry.id].text;
+	var highlightStr = undefined;
+    if(result.highlighting != null && result.highlighting[entry.id] != null){
+      var highlightStr = highlights[entry.id].text;
+    }
 	var pathToks = entry.id.split("/");
 	var formattedDateTime = new Date(entry.lastModified);
 
 	html += "<li><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></li>"
 	html += "<dl pathName='"+entry.id+"'>"
-	html += "<dd><b>File:</b> "+pathToks[pathToks.length-1]+"</dd>"
-    html += "<dd><b>Author:</b> "+entry.author+"..."+"</dd>"
-    html += "<dd><b>Date:</b> "+formattedDateTime.toString()+"</dd>"
-	
+
+    if(entry.title != undefined) {
+      if(entry.title.length < 30) {
+        html += "<dd><b>Title:</b> "+entry.title+"</dd>";
+      }
+      else {
+        html += "<dd><b>Title:</b> "+entry.title.substring(0,30)+"...</dd>";
+      }
+    }
+    else {
+      html += "<dd><b>Title:</b> <i>not found</i></dd>";
+    }
+
+	//html += "<dd><b>File:</b> "+pathToks[pathToks.length-1]+"</dd>"
+    
+	if(entry.author != undefined) {
+      if(entry.author.length < 30) {
+        html += "<dd><b>Author:</b> "+entry.author+"</dd>";
+      }
+      else {
+        html += "<dd><b>Author:</b> "+entry.author.substring(0,30)+"...</dd>";
+      }
+    }
+    else {
+      html += "<dd><b>Author:</b> <i>not found</i></dd>";
+    }
+    //now format the date string more simply
+    if(formattedDateTime.toString().search("GMT") != -1){
+      var chop = formattedDateTime.toString().search("GMT") - 1;
+      html += "<dd><b>Date:</b> "+formattedDateTime.toString().substring(0,chop)+"</dd>";
+    }
+    else {
+      html += "<dd><b>Date:</b> "+formattedDateTime.toString()+"</dd>";
+	}
+
 	// highlighted result strings can sometimes be empty,  in which case we'll 
 	// instead print the first few lines of that doc print highlight string if not empty
-    if(highlightStr !== undefined) { 
-      html += "<dd><b>Text:</b> "+highlightStr+"</dd>"
+    if(highlightStr != undefined) {
+      html += "<dd><b>Text:</b> "+highlightStr+"</dd>";
     }
-    else{  //else print the first lines of the doc
-	  html += "<dd><b>Text:</b> "+entry.text[0].substring(0,120)+"..."+"</dd>"
+    else {  //else print the first lines of the doc
+      html += "<dd><b>Text:</b> "+entry.text[0].substring(0,120)+"..."+"</dd>";
     }
-	html += "</dl>"
+	html += "</dl>";
   }
   document.getElementById('searchResult').innerHTML = html;
 
@@ -259,7 +312,6 @@ function displayResults(result) {
 	createAddNodeToolbar.call(network, path);
   })
 }
-
 
 /*********************************************************************/
 /*                        MAIN TOOLBAR                               */
@@ -276,6 +328,8 @@ _createManipulatorBar = function() {
     network.selectedControlNode = null;
     network.controlNodesActive = false;
   }
+  // clear any selections
+  network.redraw()
 
   // Restore overloaded functions
   network._restoreOverloadedFunctions();
@@ -373,7 +427,7 @@ _createManipulatorBar = function() {
     
 	if (network._getSelectedNodeCount() == 1) {
       var editButton = document.getElementById("networkEditNode");
-      editButton.onclick = _editNode.bind(this);
+      editButton.onclick = editNode.bind(this);
     }
     else if (network._getSelectedEdgeCount() == 1 && network._getSelectedNodeCount() == 0) {
       var editButton = document.getElementById("networkEditEdge");
@@ -412,25 +466,21 @@ function createAddNodeToolbar(path) {
 	
 	"<select id='nodeShape' class='toolbarSpacing'>"+
 	"<option value='ellipse'>Ellipse</option>"+
-	"<option value='image'>Image</option>"+
+	"<option value='image'>Other</option>"+
 	"<option value='box'>Box</option>"+
 	"<option value='database'>Database</option>"+
 	"<option value='circle'>Circle</option>"+
 	"<option value='dot'>Dot</option></select>"+
-
+	/*
+	"<option value='image-doc'>Document</option>"+
+	"<option value='image-img'>Image</option>"+
+	"<option value='image-pdf'>PDF</option></select>"+
+	*/
+	
 	"<input type='file' id='loadImage' style='display:none'>" +
 	"<input readonly id='nodeImage' value='' style='display:none' class='inputLength'>" +
 
     "<input type='text' id='nodeColor'/>" +
-	
-	"<select id='nodeGroup' class='toolbarSpacing'>" +
-	"<option value='none'>Group</option>" +
-	"<option value='none'>None</option>" +
-	"<option value='new'>New</option>" +
-	"</select>" +
-	
-	//"<span id='groupWrap' style='display:none'>" +
-	//"<input id='groupLabel' class='inputLength' value='1'></span>" +
 
     "<span class='network-manipulationLabel'>" + 
     network.constants.labels['addDescription'] + "</span></span>";
@@ -440,46 +490,46 @@ function createAddNodeToolbar(path) {
 	// save the path somewhere
     network.manipulationDiv.innerHTML += "" + "<span id='nodePath' pathName='"+path+"'>";
 	var pathToks = path.split("/");
-    title = pathToks[pathToks.length-1]
+    var title = pathToks[pathToks.length-1]
 		
 	document.getElementById('nodeLabel').value = title
 	$('#nodeLabel').toggle();
 
-	/*
+	/* TODO: if icon dropdown works, add images for types of files
 	var image = document.getElementById('nodeImage')
+	var titleToks = title.split(".");
+	var type = titleToks[titleToks.length-1];
 	// Determine what kind of image to use
-	// change the shape drop down accordingly
-	if (title.indexOf('.doc') > -1) {
+	if (type == "doc") {
+	  $('#nodeShape').val('doc').change()
+	}
+	else if (type == 'pdf') {
+	  $('#nodeShape').val('pdf').change()
+	}
+	else if (type == 'jpeg') {
+	  $('#nodeShape').val('img').change()
+	}
+	else {
 	  $('#nodeShape').val('image').change()
+	  $('#nodeImage').show();
 	}
-	else if (title.indexOf('.pdf') > -1) {
-	  $('#nodeShape').val('image').change()
-	}
-	else if (title.indexOf('.jpeg') > -1) {
-	  $('#nodeShape').val('image').change()
-	}
-	*/
-  }
-
-  /*
-  // Group event listener
-  var group = document.getElementById('nodeGroup');
-  $(group).on(click, function () {
-	if (group.value == 'new') {
-	  //new group turns to input box inside <option>
-	}
-	else if (group.value != 'none') {
-	  // set color of group
-	}
-  });
   */
-
+  }
+  
+  // Toggle to only show one option at a time to avoid overflow
+  var shown = true;
   $('#label').on('click', function() {
 	$('#nodeLabel').toggle();
+	if ( $('#nodeURL').toggle( shown ) ) {
+		$('#nodeURL').toggle();
+	}
   });
   
   $('#link').on('click', function() {
 	$('#nodeURL').toggle();
+	if ( $('#nodeLabel').toggle( shown ) ) {
+		$('#nodeLabel').toggle();
+	}
   });
   
   $('#nodeImage').on('click', function() {
@@ -601,7 +651,7 @@ function onAdd(data, callback) {
 /* Override edit function, added attributes to pass back like image, */ 
 /* url, etc                                                          */
 /*********************************************************************/
-function _editNode() {
+function editNode() {
     if (this.editMode == true) {
       var node = this._getSelectedNode();
 	  var custom = this.nodesData.get(node.id);
@@ -660,12 +710,6 @@ function createEditNodeToolbar(data) {
 
     "<input type='text' id='nodeColor'/>" +
 	
-	"<select id='nodeGroup' class='toolbarSpacing'>" +
-	"<option value='none'>Group</option>" +
-	"<option value='none'>None</option>" +
-	"<option value='new'>New</option>" +
-	"</select>" +
-
 	"<input type='button' value='save' id='editNodeButton' class='toolbarSpacing'></button>"+
 	"</span>";
  
@@ -680,15 +724,23 @@ function createEditNodeToolbar(data) {
 	var fileName = data.image.split("/");
 	document.getElementById('nodeImage').value = fileName[fileName.length-1];	
   }
-
+  
+  // Toggle to only show one option at a time to avoid overflow
+  var shown = true;
   $('#label').on('click', function() {
 	$('#nodeLabel').toggle();
+	if ( $('#nodeURL').toggle( shown ) ) {
+		$('#nodeURL').toggle();
+	}
   });
   
   $('#link').on('click', function() {
 	$('#nodeURL').toggle();
+	if ( $('#nodeLabel').toggle( shown ) ) {
+		$('#nodeLabel').toggle();
+	}
   });
-  
+ 
   $('#nodeImage').on('click', function() {
     // Call hidden input box	
 	$('#loadImage').trigger('click');
@@ -769,7 +821,7 @@ function onConnect(data, callback) {
 }
 	
 /*********************************************************************/
-/* Sets the defualt data  to connect two nodes with a new edge       */
+/* Sets the defualt data to connect two nodes with a new edge       */
 /*********************************************************************/
 function createEdge(sourceNodeId,targetNodeId) {
   var defaultData = {from:sourceNodeId, to:targetNodeId};
@@ -834,30 +886,9 @@ function createAddEdgeToolbar() {
   network.cachedFunctions["_handleOnRelease"] = network._handleOnRelease;
   network._handleTouch = network._handleConnect;
   network._handleOnRelease = network._finishConnect;
+  network._createEdge = createEdge;
 
   // redraw to show the unselect
-  network._redraw();
-};
-
-/*********************************************************************/
-/* */
-/*********************************************************************/
-function _releaseControlNode(pointer) {
-  var newNode = network._getNodeAt(pointer);
-  if (newNode != null) {
-    if (network.edgeBeingEdited.controlNodes.from.selected == true) {
-      network._editEdge(newNode.id, network.edgeBeingEdited.to.id);
-      network.edgeBeingEdited.controlNodes.from.unselect();
-    }
-    if (network.edgeBeingEdited.controlNodes.to.selected == true) {
-      network._editEdge(network.edgeBeingEdited.from.id, newNode.id);
-      network.edgeBeingEdited.controlNodes.to.unselect();
-    }
-  }
-  else {
-    network.edgeBeingEdited._restoreControlNodes();
-  }
-  network.freezeSimulation = false;
   network._redraw();
 };
 
@@ -866,7 +897,7 @@ function _releaseControlNode(pointer) {
 /*********************************************************************/
 function editEdge(sourceNodeId,targetNodeId) {
     var defaultData = {id: network.edgeBeingEdited.id, from:sourceNodeId, to:targetNodeId};
-    network.edgesData.update(finalizedData);
+    network.edgesData.update(defaultData);
     network.moving = true;
     network.start();
 };
@@ -948,6 +979,7 @@ function createEditEdgeToolbar() {
   network._handleOnDrag    = network._controlNodeDrag;
   network._handleDragStart = function () {}
   network._handleOnRelease = network._releaseControlNode;
+  network._editEdge		   = editEdge;
 
   // redraw to show the unselect
   network._redraw();
@@ -960,6 +992,7 @@ function onZoomFit() {
 	network.zoomExtent(true)
 }
 
+// TODO: attach so its not floating!
 /*********************************************************************/
 /* Creates a popup dialog
 /*********************************************************************/
@@ -1222,7 +1255,6 @@ function uploadFile () {
 	        $('#filePopup').dialog('destroy');
 		    draw(data);
 		  },
-		  // TODO: error?
 		});	
       },
     };

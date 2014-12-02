@@ -14,55 +14,54 @@
 	<script type="text/javascript" src="libs/spectrum/spectrum.js"></script>
 	<script type="text/javascript" src="libs/jquery-ui/jquery-ui.js"></script>
 
-  <script>
-  $(function() {
-    $( "#from" ).datepicker({
-      defaultDate: "+1w",
-      changeMonth: true,
-      numberOfMonths: 1,
-	  dateFormat: "yy-mm-dd",
-      onClose: function( selectedDate ) {
-        $( "#to" ).datepicker( "option", "minDate", selectedDate );
-      }
-    });
-    $( "#to" ).datepicker({
-      defaultDate: "+1w",
-      changeMonth: true,
-      numberOfMonths: 1,
-	  dateFormat: "yy-mm-dd",
-      onClose: function( selectedDate ) {
-        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
-      }
-    });
-  });
-  </script>
+    <script>
+      $(function() {
+        $( "#searchRangeFrom" ).datepicker({
+          changeMonth: true,
+          numberOfMonths: 1,
+	      dateFormat: "yy-mm-dd",
+          onClose: function( selectedDate ) {
+            $( "#searchRangeTo" ).datepicker( "option", "minDate", selectedDate );
+          }
+        });
+        $( "#searchRangeTo" ).datepicker({
+          changeMonth: true,
+          numberOfMonths: 1,
+	      dateFormat: "yy-mm-dd",
+          onClose: function( selectedDate ) {
+            $( "#searchRnageFrom" ).datepicker( "option", "maxDate", selectedDate );
+          }
+        });
+      });
+    </script>
   </head>
 
   <body onload="draw();">
 
 	<h1><img src="css/img/sMind.png" alt="sMind" style="width:188px; height=56px;"></h1>
-	
+
 	<div style="width:1500px;">
 		<div id="network" style="width:1100px; float:right;"></div>
 		<div id="searchDiv" class="searchDiv">
 		  <form id="searchForm" action="" method="">
 		    <input type="hidden" name="wt" value="json">
 		    
-			<input type="text" id="searchID" name="q" value="*:*">
+			<input type="text" id="searchID" name="q" value="">
 		    <button id="searchButton">Search</button>
 			<br>
 			
-			<input type="checkbox" id="title" value="title">Title</td>
-			<input type="checkbox" id="author" value="author">Author</td>
-			<input type="checkbox" id="text" value="text">Text</td>
-		    <br>
-		
-			<label for="from"> From</label>
+			<label for="from" style='margin-left:5px;'>From</label>
 			<input type="text" id="searchRangeFrom" name="from" class="searchDateRange">
 			<label for="to">to</label>
 			<input type="text" id="searchRangeTo" name="to" class="searchDateRange">  
+		    <br>
+			
+			<input type="checkbox" id="title" value="title" style='margin-left: 5px'>Title</td>
+			<input type="checkbox" id="author" value="author">Author</td>
+			<input type="checkbox" id="text" value="text">Text</td>
 	      </form>
-	
+
+		  <hr style='margin: 5px; border-color:white;'>
 		  <ul id="searchResult"></ul>
 		</div>	 
 	</div>

@@ -4,6 +4,7 @@
 	height: 600px;
 	border: 1px solid lightgray;
     font-family: verdana;
+	font-size: 12px;
 }
 
 .inputLength {
@@ -138,7 +139,7 @@ span.network-manipulationUI {
     //font-family: verdana;
     height:24px;
 	width: 24px;
-    font-size: 12px;
+    //font-size: 12px;
     -moz-border-radius: 15px;
     border-radius: 15px;
     display:inline-block;
