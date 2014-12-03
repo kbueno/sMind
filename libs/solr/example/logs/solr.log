@@ -19033,3 +19033,366 @@ INFO  - 2014-12-02 10:16:34.202; org.apache.solr.core.SolrCore; [collection1] we
 INFO  - 2014-12-02 10:17:17.162; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=id:/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/test.doc&wt=json} hits=2 status=0 QTime=9 
 INFO  - 2014-12-02 10:21:26.411; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
 INFO  - 2014-12-02 10:21:30.863; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/Client.doc&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 11:19:25.393; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 11:23:21.584; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 11:23:45.638; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:hello&wt=json} hits=0 status=0 QTime=1 
+INFO  - 2014-12-02 11:23:51.106; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:hello&wt=json} hits=0 status=0 QTime=1 
+INFO  - 2014-12-02 11:23:55.272; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 13:16:51.698; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 13:17:43.416; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+ERROR - 2014-12-02 13:35:20.584; org.apache.solr.common.SolrException; org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 13:35:20.586; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=8 status=500 QTime=620 
+ERROR - 2014-12-02 13:35:20.587; org.apache.solr.common.SolrException; null:org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 13:35:37.635; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=133 
+INFO  - 2014-12-02 13:36:22.229; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=57 
+INFO  - 2014-12-02 13:41:52.973; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 13:41:59.523; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=43 
+INFO  - 2014-12-02 13:42:03.196; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&wt=json} hits=2 status=0 QTime=0 
+INFO  - 2014-12-02 13:42:14.004; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 13:43:20.641; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 13:43:25.639; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=18 
+INFO  - 2014-12-02 13:43:51.706; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 13:43:56.276; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={q=text:client&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 13:43:59.799; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=18 
+INFO  - 2014-12-02 13:53:00.387; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 13:53:10.041; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=24 
+INFO  - 2014-12-02 13:57:34.086; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+ERROR - 2014-12-02 13:57:40.856; org.apache.solr.common.SolrException; org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 13:57:40.857; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=8 status=500 QTime=178 
+ERROR - 2014-12-02 13:57:40.859; org.apache.solr.common.SolrException; null:org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 13:57:46.589; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=18 
+INFO  - 2014-12-02 13:58:00.706; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 13:58:03.281; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 13:58:07.139; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 14:00:03.503; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+ERROR - 2014-12-02 14:00:06.364; org.apache.solr.common.SolrException; org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 14:00:06.365; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=8 status=500 QTime=140 
+ERROR - 2014-12-02 14:00:06.367; org.apache.solr.common.SolrException; null:org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024
+	at org.apache.lucene.search.ScoringRewrite$1.checkMaxClauseCount(ScoringRewrite.java:72)
+	at org.apache.lucene.search.ScoringRewrite$ParallelArraysTermCollector.collect(ScoringRewrite.java:149)
+	at org.apache.lucene.search.TermCollectingRewrite.collectTerms(TermCollectingRewrite.java:79)
+	at org.apache.lucene.search.ScoringRewrite.rewrite(ScoringRewrite.java:105)
+	at org.apache.lucene.search.MultiTermQuery.rewrite(MultiTermQuery.java:288)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.extract(WeightedSpanTermExtractor.java:217)
+	at org.apache.lucene.search.highlight.WeightedSpanTermExtractor.getWeightedSpanTerms(WeightedSpanTermExtractor.java:474)
+	at org.apache.lucene.search.highlight.QueryScorer.initExtractor(QueryScorer.java:217)
+	at org.apache.lucene.search.highlight.QueryScorer.init(QueryScorer.java:186)
+	at org.apache.lucene.search.highlight.Highlighter.getBestTextFragments(Highlighter.java:197)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlightingByHighlighter(DefaultSolrHighlighter.java:527)
+	at org.apache.solr.highlight.DefaultSolrHighlighter.doHighlighting(DefaultSolrHighlighter.java:414)
+	at org.apache.solr.handler.component.HighlightComponent.process(HighlightComponent.java:139)
+	at org.apache.solr.handler.component.SearchHandler.handleRequestBody(SearchHandler.java:208)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1859)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:710)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:413)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:197)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1419)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:455)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:137)
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:557)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1075)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:384)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:193)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1009)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:135)
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:255)
+	at org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:154)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:116)
+	at org.eclipse.jetty.server.Server.handle(Server.java:368)
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:489)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handleRequest(BlockingHttpConnection.java:53)
+	at org.eclipse.jetty.server.AbstractHttpConnection.headerComplete(AbstractHttpConnection.java:942)
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.headerComplete(AbstractHttpConnection.java:1004)
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:640)
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235)
+	at org.eclipse.jetty.server.BlockingHttpConnection.handle(BlockingHttpConnection.java:72)
+	at org.eclipse.jetty.server.bio.SocketConnector$ConnectorEndPoint.run(SocketConnector.java:264)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:608)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:543)
+	at java.lang.Thread.run(Thread.java:745)
+
+INFO  - 2014-12-02 14:00:56.942; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:00:58.889; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:01:03.206; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=19 
+INFO  - 2014-12-02 14:02:52.180; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:03:13.208; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-09T00:00:00.000Z+TO+NOW]} hits=2 status=0 QTime=9 
+INFO  - 2014-12-02 14:03:19.444; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=6 
+INFO  - 2014-12-02 14:03:40.591; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-10T00:00:00.000Z+TO+2014-10-10T00:00:00.000Z]} hits=0 status=0 QTime=9 
+INFO  - 2014-12-02 14:03:44.338; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-10T00:00:00.000Z+TO+2014-10-11T00:00:00.000Z]} hits=1 status=0 QTime=3 
+INFO  - 2014-12-02 14:03:57.488; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=42 
+INFO  - 2014-12-02 14:04:14.575; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:Jesse&wt=json} hits=0 status=0 QTime=2 
+INFO  - 2014-12-02 14:04:20.327; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:04:38.347; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=1 
+INFO  - 2014-12-02 14:04:45.280; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=0 
+INFO  - 2014-12-02 14:09:42.666; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:09:42.719; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:09:42.821; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:09:42.904; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:09:42.970; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:09:48.784; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=19 
+INFO  - 2014-12-02 14:09:48.839; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=15 
+INFO  - 2014-12-02 14:09:48.903; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=15 
+INFO  - 2014-12-02 14:09:48.983; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=20 
+INFO  - 2014-12-02 14:09:49.061; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:client&hl.simple.pre=<b>&hl.simple.post=</b>&wt=json&hl=true} hits=2 status=0 QTime=22 
+INFO  - 2014-12-02 14:10:13.450; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=6 
+INFO  - 2014-12-02 14:10:13.460; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=6 
+INFO  - 2014-12-02 14:10:13.472; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=6 
+INFO  - 2014-12-02 14:10:13.480; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=4 
+INFO  - 2014-12-02 14:10:13.491; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json&fq=lastModified:[2014-10-11T00:00:00.000Z+TO+NOW]} hits=1 status=0 QTime=6 
+INFO  - 2014-12-02 14:10:24.245; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:24.291; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=0 
+INFO  - 2014-12-02 14:10:24.358; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:24.440; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:24.512; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=title:*&wt=json} hits=1 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:28.738; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:28.792; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:28.853; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:28.908; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:10:28.989; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:11:10.837; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-02 14:12:22.498; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 14:12:28.027; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/Client.doc&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 14:12:43.690; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:12:51.528; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/Client.doc&wt=json} hits=2 status=0 QTime=2 
+INFO  - 2014-12-02 14:13:52.460; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=2 
+INFO  - 2014-12-02 14:14:03.358; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/test.doc&wt=json} hits=2 status=0 QTime=1 
+INFO  - 2014-12-02 14:16:37.299; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:16:37.343; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:16:37.406; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:16:37.466; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 14:18:12.154; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=1 
+INFO  - 2014-12-02 22:03:21.425; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=text:*&wt=json} hits=8 status=0 QTime=7 
+INFO  - 2014-12-03 10:32:03.756; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-03 10:32:08.886; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:Jesse&wt=json} hits=0 status=0 QTime=1 
+INFO  - 2014-12-03 10:32:13.387; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:Jesse+&wt=json} hits=0 status=0 QTime=2 
+INFO  - 2014-12-03 10:32:17.029; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:Jesse++&wt=json} hits=0 status=0 QTime=2 
+INFO  - 2014-12-03 10:32:20.654; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:Jesse*&wt=json} hits=2 status=0 QTime=7 
+INFO  - 2014-12-03 10:32:30.073; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:*&wt=json} hits=7 status=0 QTime=1 
+INFO  - 2014-12-03 10:32:35.205; org.apache.solr.core.SolrCore; [collection1] webapp=/solr path=/select params={fl=title,author,text,lastModified,id&q=author:SEL&wt=json} hits=1 status=0 QTime=2 

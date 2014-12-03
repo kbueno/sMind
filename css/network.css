@@ -23,9 +23,8 @@
 	background-color: #dadada;
 }
 
-
 #fileMenu {
-	width: 70px;
+	width: 90px;
 	position: fixed; 
 	margin-top: 1px;
 }
@@ -203,6 +202,10 @@ span.network-manipulationUI.edit.editmode {
 }
 
 span.network-manipulationUI.connect {
+    background-image: url("img/connectIcon.png");
+}
+
+span.network-manipulationUI.group {
     background-image: url("img/connectIcon.png");
 }
 

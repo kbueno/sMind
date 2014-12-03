@@ -71,13 +71,23 @@ function draw(data) {
 		// search for path
 		$('#searchResult').empty();
 		document.getElementById('searchID').value = node.path;
+	    
+		/*
+		console.log("get doc"); 
+		$.ajax({
+		  type: "GET",
+	      url: "/docs/"+node.path,
+	      success: function (data) {	
+	        // TODO: open in seperate window
+	      }
+		});
+		*/
 	  }
 	  if (node.link != "") {
 		// Must have an http:// to open link correctly
         if (node.link.indexOf('http://') == -1) {
 	      node.link = 'http://' + node.link;
         }
-	    // TODO: open in seperate window
 		window.open(node.link, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	}	
@@ -87,7 +97,6 @@ function draw(data) {
   $('#searchButton').on('click', function(e) {
 	searchQuery(e);
   });
-  // TODO: clear button?
 
   createPopup();
   $('#filePopup').dialog('close');
@@ -202,11 +211,10 @@ function searchQuery(e) {
   //* if we want highlighted terms, since every term will match *!
   //This error is usually indicated by solr throwing a TooManyClauses 
   //error on the server side.
-  if(query.search("%2A") != -1) {
+  if(textCheckBox.checked && (query.indexOf("%2A") == -1 && query.indexOf("*") == -1)) {
     //finally, append highlighting parameters to the user-query. 
 	//This must be done even for manual-user queries, since our displayResults
     //function expects highlighting.
-	//TODO: get displayResults to check for highlights before expecting them.
     query += "&hl=true&hl.simple.pre=%3Cb%3E&hl.simple.post=%3C%2Fb%3E";
   }
 
@@ -230,8 +238,12 @@ function searchQuery(e) {
   set of fields, or allow fields to be displayed only if they exist.
 *********************************************************************/
 function displayResults(result) {
+  console.log(result);
   var data = result.response
-  console.log(data);
+  
+  if (result.highlighting !== undefined) {
+	var highlights = result.highlighting
+  }
    
   // Format results in HTML
   var html = "";
@@ -249,12 +261,12 @@ function displayResults(result) {
 
   for(var i = 0; i < data.docs.length; i++){
     var entry = data.docs[i];
-	var highlightStr = undefined;
-    if(result.highlighting != null && result.highlighting[entry.id] != null){
-      var highlightStr = highlights[entry.id].text;
-    }
 	var pathToks = entry.id.split("/");
 	var formattedDateTime = new Date(entry.lastModified);
+
+    if(highlights !== undefined && highlights[entry.id] != null){
+      var highlightStr = highlights[entry.id].text;
+    }
 
 	html += "<li><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></li>"
 	html += "<dl pathName='"+entry.id+"'>"
@@ -356,14 +368,16 @@ _createManipulatorBar = function() {
 	  
 	  "<span id='menuWrap' style='display:none;'>" +
 	  "<ul id='fileMenu'>" +
-		"<li>Save<ul class='fileMenuOption'>" +
+		"<li>Save Map<ul class='fileMenuOption'>" +
 			"<li id='saveToDisk'>To Disk</li><input type='file' id='saveFile' style='display:none;'>" +
 			"<li id='saveToSmind'>To sMind</li>" +
 		"</ul></li>" +
-		"<li>Load<ul class='fileMenuOption'>" +
+		"<li>Load Map<ul class='fileMenuOption'>" +
 			"<li id='loadFromDisk'>From Disk</li><input type='file' id='loadFile' style='display:none;'>" +
 			"<li id='loadFromSmind'>From sMind</li>" +
 		"</ul></li>" +
+		"<li id='clearMap'>Clear Map</li>" +
+		"<li id='deleteMap'>Delete Map</li>" +
 	  "</ul>" +
 	  "</span>" +
 
@@ -374,7 +388,12 @@ _createManipulatorBar = function() {
 	  "<div class='network-seperatorLine'></div>" +
       "<span class='network-manipulationUI connect' id='networkConnectNode' title='Connect Node'></span>";
     
-	if (network._getSelectedNodeCount() == 1) {
+	if (network._getSelectedNodeCount() > 1) {
+      network.manipulationDiv.innerHTML += "" +
+        "<div class='network-seperatorLine'></div>" +
+        "<span class='network-manipulationUI group' id='networkGroupNodes' title='Group Nodes'></span>";
+    }
+	else if (network._getSelectedNodeCount() == 1) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
         "<span class='network-manipulationUI edit' id='networkEditNode' title='Edit Node'></span>";
@@ -417,6 +436,28 @@ _createManipulatorBar = function() {
 	});
 	var loadFromSmind = document.getElementById("loadFromSmind");
 	loadFromSmind.onclick = popup.bind(this, "Load");
+	var clearMap = document.getElementById("clearMap");
+	clearMap.onclick = function () {
+      $('.ui-dialog-content').append("<p id='alert'>Are you sure you want to clear this map?</p>");
+      var buttons = { 
+        Cancel: function() {
+		  clearPopup();
+	      $('#filePopup').dialog('close');
+        },
+        Okay: function() {		  
+		  nodes.clear();
+		  edges.clear();
+		  clearPopup();
+		  network.redraw();
+		  $('#menuWrap').hide() 
+	      $('#filePopup').dialog('close');
+		},
+	  };	
+      $('#filePopup').dialog("option", "buttons", buttons);
+      $('#filePopup').dialog("open");
+	}
+	var deleteMap = document.getElementById("deleteMap");
+	deleteMap.onclick = popup.bind(this, "Delete");
 
 	var zoomFitButton = document.getElementById("networkZoomFit");
 	zoomFitButton.onclick = onZoomFit.bind(this);
@@ -607,6 +648,15 @@ function onAdd(data, callback) {
 	data.path = path.getAttribute('pathName');
   }
 
+  var title = "<table>" +
+			  "<tr><td>Node ID:</td><td>"+data.id+"</td>" +
+			  "<tr><td>Node Label:</td><td>"+data.label+"</td>" +
+			  "<tr><td>Node Link:</td><td>"+data.link+"</td>" +
+			  "<tr><td>Node Shape:</td><td>"+data.shape+"</td>" +
+			  "<tr><td>Node Color:</td><td>"+data.color+"</td>" +
+			  "<tr><td>Node Path:</td><td>"+data.path+"</td>" +
+			  "</table>"
+  data.title = title;
   console.log(data);
 
   if (shapeInput.value != 'image') {
@@ -1046,9 +1096,12 @@ function popup(type) {
 	      if (type == "Save") {
 		    saveMap(input, data);
 	      }
-	      else {
+	      else if (type == "Load") {
 		    loadMap(input, data);
 	      }
+		  else if (type == "Delete") {
+			deleteMap(input, data);
+		  }
 	    }
       }];
       $('#filePopup').dialog("option", "buttons", buttons);
@@ -1194,6 +1247,50 @@ function loadMap(id, data) {
   }
 }
 
+// TODO: does not delete correctly
+/*********************************************************************/
+/* Delete map from sMind 
+/*********************************************************************/
+function deleteMap (id, data) {
+  // If map does not exist
+  if (data[id] == undefined) {
+	// Replace the current popup
+	clearPopup();
+	$('.ui-dialog-content').append("<p id='alert'>Map does not exist!</p>");
+	var buttons = { 
+	  Ok: function() {
+		clearPopup();
+		popup("Delete");
+	  },
+	}
+	$('#filePopup').dialog("option", "buttons", buttons);
+  }
+  else {
+	// Replace the popup content
+	clearPopup();
+	$('.ui-dialog-content').append("<p id='alert'>Are you sure you want to delete this map?</p>");
+	var buttons = { 
+	  Cancel: function() {
+	    clearPopup();
+		popup("Delete");
+	  },
+	  Okay: function() {		  
+		// Send to server		
+        $.ajax({
+	      type: "DELETE",
+	      url: "/data/delete/" + id,
+	      success: function (res) {
+		    console.log(res);
+		    clearPopup();
+			$('#filePopup').dialog('close');
+          }
+        });
+	  },
+	};
+    $('#filePopup').dialog("option", "buttons", buttons);
+  }
+}
+
 /*********************************************************************/
 /* Download a file from disk   										 */
 /*********************************************************************/
@@ -1277,24 +1374,24 @@ function uploadFile () {
   }
 }
 
-/**
- * Create a semi UUID
- * source: http://stackoverflow.com/a/105074/1262753
- * @return {String} uuid
- */
+/*********************************************************************/
+/* Create a semi UUID                                                */
+/* source: http://stackoverflow.com/a/105074/1262753                 */
+/* @return {String} uuid                                             */
+/*********************************************************************/
 function randomUUID() {
   var S4 = function () {
     return Math.floor(
-        Math.random() * 0x10000 /* 65536 */
+      Math.random() * 0x10000 /* 65536 */
     ).toString(16);
   };
 
   return (
-      S4() + S4() + '-' +
-          S4() + '-' +
-          S4() + '-' +
-          S4() + '-' +
-          S4() + S4() + S4()
-      );
+    S4() + S4() + '-' +
+    S4() + '-' +
+    S4() + '-' +
+    S4() + '-' +
+    S4() + S4() + S4()
+  );
 };
 

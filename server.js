@@ -21,15 +21,12 @@ try {
 	data = {};
 }
 
-// For saving to disk
-var tmpData = {};
-
 // This serves index.html
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');	
 });
 
-// TODO: How to open up in a new window?
+// Open a document link from the search bar 
 app.get('/docs/*', function(req, res) {
 	console.log(req.params)
 	res.sendFile("/"+req.params[0]);
@@ -41,7 +38,7 @@ app.get('/data', function(req, res) {
 	//res.status(status).send(body);
 });
 
-// Post data from the client
+// Save data from the client
 app.post('/data/save', function(req, res) {
     console.log(req.body);
 	// Create a unique ID and store in data
@@ -53,7 +50,8 @@ app.post('/data/save', function(req, res) {
 	//res.status(status).send(body);
 });
 
-// Send data to the client
+// TODO: delete id from Object and json file
+// Load data to the client given an id
 app.get('/data/load/:id', function(req, res) {
 	// Check if file exists
 	if (data[req.params.id] != undefined) {
@@ -61,6 +59,16 @@ app.get('/data/load/:id', function(req, res) {
 	} else {
 		res.send(404);
 	}
+});
+
+// Delete data given an id
+app.delete('/data/delete/:id', function(req, res) {
+	var map = req.params.id;
+	console.log(map);
+	
+	delete data.map
+	console.log(data)
+	res.send(200, map);
 });
 
 // Store the file info to be downloaded
@@ -75,6 +83,8 @@ app.post('/download/file', function(req,res) {
 	//res.status(status).send(body);
 });
 
+// For saving to disk
+var tmpData = {};
 // Downloads the file
 app.get('/download/file/:id', function(req, res) {
 	// Check if file exists
