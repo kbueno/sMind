@@ -41,7 +41,18 @@ function draw(data) {
 	},
     // Turns on pre-made toolbar functions
 	dataManipulation: true,
-	selectable: true
+	selectable: true,
+	tooltip: {
+	  delay: 1000,
+      fontColor: "Black",
+      fontSize: 12, // px
+      fontFace: "verdana",
+      color: {
+        border: "#666",
+        background: "#d6d9d8"
+	  }
+	},
+	brokenImage: "css/img/broken.png",
   };
 
   // Create the network and override the main toolbar function
@@ -54,34 +65,16 @@ function draw(data) {
   network.on('stabilized', function () {
 	network.storePosition();
   });
-  // This just displays selected nodes
-  network.on('select', function(params) {
-	document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
-  });
   // This will open the node link if it exists or
-  // show the search results in search bar if it exists
+  // the node document if it exists
   network.on('doubleClick', function(params) {
 	// Make sure a node is actually selested
 	if (network._getSelectedNodeCount() == 1) {
 	  var node = nodes.get(params.nodes[0]);
 	  console.log(node);
 	  
-	  // TODO: open search result in search bar
-	  if (node.path != undefined) {
-		// search for path
-		$('#searchResult').empty();
-		document.getElementById('searchID').value = node.path;
-	    
-		/*
-		console.log("get doc"); 
-		$.ajax({
-		  type: "GET",
-	      url: "/docs/"+node.path,
-	      success: function (data) {	
-	        // TODO: open in seperate window
-	      }
-		});
-		*/
+	  if (node.path != "") {
+	    window.open("/docs/"+node.path, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	  if (node.link != "") {
 		// Must have an http:// to open link correctly
@@ -230,13 +223,9 @@ function searchQuery(e) {
 	})
 }
 
-/*********************************************************************
-  Displays the results from a search query                          
-
-  Instead of displaying "not found" for empty fields below, we could
-  just not display those fields. It depends whether we want a static
-  set of fields, or allow fields to be displayed only if they exist.
-*********************************************************************/
+/*********************************************************************/
+/*  Displays the results from a search query                         */
+/*********************************************************************/
 function displayResults(result) {
   console.log(result);
   var data = result.response
@@ -268,7 +257,7 @@ function displayResults(result) {
       var highlightStr = highlights[entry.id].text;
     }
 
-	html += "<li><a href=/docs/"+entry.id+">"+pathToks[pathToks.length-1]+"</a></li>"
+	html += "<li><a href=/docs/"+entry.id+" class='searchLink' target='_blank'>"+pathToks[pathToks.length-1]+"</a></li>"
 	html += "<dl pathName='"+entry.id+"'>"
 
     if(entry.title != undefined) {
@@ -322,7 +311,14 @@ function displayResults(result) {
 	// Call addNode toolbar and pass the path
 	var path = this.getAttribute('pathName');
 	createAddNodeToolbar.call(network, path);
-  })
+  });
+
+  $('.searchLink').on('click', function(e) {
+	console.log(e.target.href)
+	e.preventDefault()
+	window.open(e.target.href, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
+  });
+
 }
 
 /*********************************************************************/
@@ -429,7 +425,7 @@ _createManipulatorBar = function() {
 	  $('#loadFile').trigger('click');
 	  return false;
 	}
-	// TODO: causes problem when selects a second time
+	// TODO: sometimes causes problem when selects a second time
     $('#loadFile').change(function () {
 		// When file is chosen from disk
 		uploadFile();
@@ -466,7 +462,11 @@ _createManipulatorBar = function() {
     var addEdgeButton = document.getElementById("networkConnectNode");
     addEdgeButton.onclick = createAddEdgeToolbar.bind(this);
     
-	if (network._getSelectedNodeCount() == 1) {
+	if (network._getSelectedNodeCount() > 1) {
+      var groupButton = document.getElementById("networkGroupNodes");
+      groupButton.onclick = createGroupNodesToolbar.bind(this);
+    }
+	else if (network._getSelectedNodeCount() == 1) {
       var editButton = document.getElementById("networkEditNode");
       editButton.onclick = editNode.bind(this);
     }
@@ -647,15 +647,18 @@ function onAdd(data, callback) {
   if (path !== null) {
 	data.path = path.getAttribute('pathName');
   }
+  else {
+	data.path = "";
+  }
 
   var title = "<table>" +
-			  "<tr><td>Node ID:</td><td>"+data.id+"</td>" +
-			  "<tr><td>Node Label:</td><td>"+data.label+"</td>" +
-			  "<tr><td>Node Link:</td><td>"+data.link+"</td>" +
-			  "<tr><td>Node Shape:</td><td>"+data.shape+"</td>" +
-			  "<tr><td>Node Color:</td><td>"+data.color+"</td>" +
-			  "<tr><td>Node Path:</td><td>"+data.path+"</td>" +
-			  "</table>"
+			  "<tr><td><b>Node ID:</b></td><td>"+data.id+"</td>" +
+			  "<tr><td><b>Node Label:</b></td><td>"+data.label+"</td>" +
+			  "<tr><td><b>Node Link:</b></td><td>"+data.link+"</td>" +
+			  "<tr><td><b>Node Shape:</b></td><td>"+data.shape+"</td>" +
+			  "<tr><td><b>Node Color:</b></td><td>"+data.color+"</td>" +
+			  "<tr><td><b>Node Path:</b></td><td>"+data.path+"</td>" +
+			  "</table>";
   data.title = title;
   console.log(data);
 
@@ -839,15 +842,95 @@ function createEditNodeToolbar(data) {
 }
 
 /*********************************************************************/
+/* Add Edge Toolbar                                                  */
+/*********************************************************************/
+function createAddEdgeToolbar() {
+  // Clear whatever toolbar was being used in order to create this one
+  network._clearManipulatorBar();
+  network._unselectAll(true);
+  network.freezeSimulation = true;
+
+  if (network.boundFunction) {
+    network.off('select', network.boundFunction);
+  }
+
+  network._unselectAll();
+  network.forceAppendSelection = false;
+  network.blockConnectingEdgeSelection = true;
+
+  // All the HTML for the toolbar goes here
+  network.manipulationDiv.innerHTML = "" +
+    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
+    "<div class='network-seperatorLine'></div>" +
+    "<span class='network-manipulationUI none'>" +
+	
+	"<input type='button' value='Label' id='label'>" +
+	"<input id='edgeLabel' class='inputLength' value='' style='display:none'>" +
+	
+	"<select id='edgeType' class='toolbarSpacing'>" +
+	"<option value='line'>Line</option>" +
+	"<option value='dash-line'>Dash</option>" +
+	"<option value='arrow'>Arrow</option>" +
+	"<option value='arrow-center'>Arrow2</option>" +
+	"</select>" +
+    
+    "<input type='text' id='edgeColor'/>" +
+
+	"<span class='network-manipulationLabel'>" + 
+	network.constants.labels['linkDescription'] + 
+	"</span></span>";
+
+  $('#label').on('click', function() {
+	$('#edgeLabel').toggle();
+  });
+
+  $("#edgeColor").spectrum({
+    color: "#45b5d6",
+	preferredFormat: 'hex',
+	showInput: true
+  });
+
+  // bind the icon
+  var backButton = document.getElementById("networkBack");
+  backButton.onclick = network._createManipulatorBar.bind(this);
+
+  // we use the boundFunction so we can reference it when we unbind it from the "select" event.
+  network.boundFunction = network._handleConnect.bind(this);
+  network.on('select', network.boundFunction);
+
+  // temporarily overload functions
+  network.cachedFunctions["_handleTouch"] = network._handleTouch;
+  network.cachedFunctions["_handleOnRelease"] = network._handleOnRelease;
+  network._handleTouch = network._handleConnect;
+  network._handleOnRelease = network._finishConnect;
+  network._createEdge = createEdge;
+
+  // redraw to show the unselect
+  network._redraw();
+};
+
+/*********************************************************************/
 /* Collects the data to create a link                                */
 /*********************************************************************/
 function onConnect(data, callback) {
   var labelInput = document.getElementById('edgeLabel');
   var typeInput = document.getElementById('edgeType');
+  var colorInput = $('#edgeColor').spectrum('get');
 	  
   data.label = labelInput.value;
   data.style = typeInput.value;
+  data.color = colorInput.toHexString();
 	  
+  var title = "<table>" +
+			  "<tr><td><b>Edge ID:</b></td><td>"+data.id+"</td>" +
+			  "<tr><td><b>Edge To:</b></td><td>"+data.to+"</td>" +
+			  "<tr><td><b>Edge From:</b></td><td>"+data.from+"</td>" +
+			  "<tr><td><b>Edge Label:</b></td><td>"+data.label+"</td>" +
+			  "<tr><td><b>Edge Style:</b></td><td>"+data.style+"</td>" +
+			  "<tr><td><b>Edge Color:</b></td><td>"+data.color+"</td>" +
+			  "</table>";
+  data.title = title;
+
   if (data.from == data.to) {
 	$('.ui-dialog-content').append("<p id='alert'>Do you want to connect the node to itself?</p>");
     var buttons = { 
@@ -881,66 +964,6 @@ function createEdge(sourceNodeId,targetNodeId) {
     network.start();
   });
 }
-
-/*********************************************************************/
-/* Add Edge Toolbar                                                  */
-/*********************************************************************/
-function createAddEdgeToolbar() {
-  // Clear whatever toolbar was being used in order to create this one
-  network._clearManipulatorBar();
-  network._unselectAll(true);
-  network.freezeSimulation = true;
-
-  if (network.boundFunction) {
-    network.off('select', network.boundFunction);
-  }
-
-  network._unselectAll();
-  network.forceAppendSelection = false;
-  network.blockConnectingEdgeSelection = true;
-
-  // All the HTML for the toolbar goes here
-  network.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
-    "<div class='network-seperatorLine'></div>" +
-    "<span class='network-manipulationUI none'>" +
-	
-	"<input type='button' value='Label' id='label'>" +
-	"<input id='edgeLabel' class='inputLength' value='' style='display:none'>" +
-	
-	"<select id='edgeType' class='toolbarSpacing'>" +
-	"<option value='line'>Line</option>" +
-	"<option value='dash-line'>Dash</option>" +
-	"<option value='arrow'>Arrow</option>" +
-	"<option value='arrow-center'>Arrow2</option>" +
-	"</select>" +
-    
-	"<span class='network-manipulationLabel'>" + 
-	network.constants.labels['linkDescription'] + 
-	"</span></span>";
-
-  $('#label').on('click', function() {
-	$('#edgeLabel').toggle();
-  });
-
-  // bind the icon
-  var backButton = document.getElementById("networkBack");
-  backButton.onclick = network._createManipulatorBar.bind(this);
-
-  // we use the boundFunction so we can reference it when we unbind it from the "select" event.
-  network.boundFunction = network._handleConnect.bind(this);
-  network.on('select', network.boundFunction);
-
-  // temporarily overload functions
-  network.cachedFunctions["_handleTouch"] = network._handleTouch;
-  network.cachedFunctions["_handleOnRelease"] = network._handleOnRelease;
-  network._handleTouch = network._handleConnect;
-  network._handleOnRelease = network._finishConnect;
-  network._createEdge = createEdge;
-
-  // redraw to show the unselect
-  network._redraw();
-};
 
 /*********************************************************************/
 /* connect two nodes with a new edge.
@@ -1042,7 +1065,6 @@ function onZoomFit() {
 	network.zoomExtent(true)
 }
 
-// TODO: attach so its not floating!
 /*********************************************************************/
 /* Creates a popup dialog
 /*********************************************************************/
@@ -1247,7 +1269,6 @@ function loadMap(id, data) {
   }
 }
 
-// TODO: does not delete correctly
 /*********************************************************************/
 /* Delete map from sMind 
 /*********************************************************************/

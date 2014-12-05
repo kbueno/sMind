@@ -25,7 +25,9 @@
 
 #fileMenu {
 	width: 90px;
-	position: fixed; 
+	//position: fixed; 
+	position: absolute;
+	float: left;
 	margin-top: 1px;
 }
 
@@ -53,12 +55,12 @@ div.searchDiv {
 
 #searchID {
 	margin: 5px;
-	width: 300px;
+	width: 290px;
 }
 
 .searchDateRange {
 	margin: 5px;
-	width: 100px;
+	width: 107px;
 }
 
 ul#searchResult {
@@ -72,6 +74,7 @@ ul#searchResult a {
 
 ul#searchResult dl {
 	margin-top: 0px;
+	margin-bottom: 10px;
 }
 
 ul#searchResult dl:hover {
@@ -206,7 +209,7 @@ span.network-manipulationUI.connect {
 }
 
 span.network-manipulationUI.group {
-    background-image: url("img/connectIcon.png");
+    background-image: url("img/addNodeIcon.png");
 }
 
 span.network-manipulationUI.delete {

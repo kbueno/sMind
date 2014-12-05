@@ -18023,6 +18023,8 @@ return /******/ (function(modules) { // webpackBootstrap
     styleAttr.WebkitBorderRadius = "3px";
     styleAttr.boxShadow = "3px 3px 10px rgba(128, 128, 128, 0.5)";
     styleAttr.whiteSpace = "nowrap";
+	// added so that popup will show above toolbar
+    styleAttr.zIndex = "9999";
     this.container.appendChild(this.frame);
   }
 

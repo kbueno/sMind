@@ -21,6 +21,18 @@ try {
 	data = {};
 }
 
+// Saves data object to data.json (overwrites file)
+var saveToDisk = function() {
+	fs.writeFile("data.json", JSON.stringify(data, null, 4), {encoding: "utf8"}, function(err) {
+		if (err) {
+			console.log("Failed to save to data.json");
+		}
+		else {
+			console.log("Saved to data.json");
+		}
+	});
+};
+
 // This serves index.html
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');	
@@ -45,12 +57,12 @@ app.post('/data/save', function(req, res) {
 	var id = req.body["name"]
 	data[id] = req.body["data"];
 
+	saveToDisk();
 	// Send response with ID
 	res.send(200,{"id": id});
 	//res.status(status).send(body);
 });
 
-// TODO: delete id from Object and json file
 // Load data to the client given an id
 app.get('/data/load/:id', function(req, res) {
 	// Check if file exists
@@ -66,8 +78,9 @@ app.delete('/data/delete/:id', function(req, res) {
 	var map = req.params.id;
 	console.log(map);
 	
-	delete data.map
+	delete data[map]
 	console.log(data)
+	saveToDisk();
 	res.send(200, map);
 });
 
@@ -134,5 +147,6 @@ process.on("SIGINT", function () {
 	fs.writeFileSync("data.json", JSON.stringify(data, null, 4), {encoding: "utf8"});
 	process.exit();
 });
+
 
 app.listen(8080)
