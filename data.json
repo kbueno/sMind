@@ -129,5 +129,177 @@
             }
         ],
         "edges": []
+    },
+    "test": {
+        "nodes": [
+            {
+                "id": 0,
+                "x": -250,
+                "y": -200,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>0</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 1,
+                "x": -200,
+                "y": -150,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>1</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 2,
+                "x": -150,
+                "y": -200,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>2</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 3,
+                "x": -100,
+                "y": -150,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>3</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 4,
+                "x": -50,
+                "y": -200,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>4</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 5,
+                "x": 0,
+                "y": -150,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>5</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 6,
+                "x": 50,
+                "y": -200,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>6</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 7,
+                "x": 100,
+                "y": -150,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>7</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 8,
+                "x": 150,
+                "y": -200,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>8</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": 9,
+                "x": 200,
+                "y": -150,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>9</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            }
+        ],
+        "edges": [
+            {
+                "style": "line",
+                "from": 1,
+                "to": 3,
+                "id": 3,
+                "label": "",
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>3</td><tr><td><b>Edge To:</b></td><td>3</td><tr><td><b>Edge From:</b></td><td>1</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 3,
+                "to": 5,
+                "id": 5,
+                "label": "",
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>5</td><tr><td><b>Edge To:</b></td><td>5</td><tr><td><b>Edge From:</b></td><td>3</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 5,
+                "to": 7,
+                "id": 7,
+                "label": "",
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>7</td><tr><td><b>Edge To:</b></td><td>7</td><tr><td><b>Edge From:</b></td><td>5</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 7,
+                "to": 9,
+                "id": 9,
+                "label": "",
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>9</td><tr><td><b>Edge To:</b></td><td>9</td><tr><td><b>Edge From:</b></td><td>7</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            }
+        ]
     }
 }

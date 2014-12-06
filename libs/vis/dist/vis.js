@@ -28478,6 +28478,8 @@ return /******/ (function(modules) { // webpackBootstrap
    */
   exports.selectEdges = function(selection) {
     var i, iMax, id;
+	// Added for testing but actually causes error without
+	var highlightEdges = true;
 
     if (!selection || (selection.length == undefined))
       throw 'Selection must be an array with ids';
