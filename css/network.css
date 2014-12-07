@@ -12,7 +12,7 @@
 }
 
 #mapTable {
-	width: 200px;
+	width: 100%;
 	cursor: pointer;
 }
 #mapTable tr:hover {

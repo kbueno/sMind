@@ -8,7 +8,7 @@ function draw(data) {
 
   // Vis network needs an object with nodes and edges keys
   // This will determine if an object is provided or not
-  // If not, it will just use the new vis.DataSet() defined above
+  // If not, it will just use the new vis.DataSet()
   console.log(data);
   if (data == undefined) {
 	nodes = new vis.DataSet();
@@ -65,8 +65,7 @@ function draw(data) {
   network.on('stabilized', function () {
 	network.storePosition();
   });
-  // This will open the node link if it exists or
-  // the node document if it exists
+  // This will open the node link if it exists or the node document if it exists
   network.on('doubleClick', function(params) {
 	// Make sure a node is actually selested
 	if (network._getSelectedNodeCount() == 1) {
@@ -237,7 +236,7 @@ function displayResults(result) {
   // Format results in HTML
   var html = "";
 
-  //state nresults found
+  //state results found
   if(data.docs.length == 0) {
     html += "<i>No results found</i>";
   }
@@ -248,6 +247,7 @@ function displayResults(result) {
     html += "<i>"+data.docs.length.toString()+" results</i>";
   }
 
+  // format the fields in the result
   for(var i = 0; i < data.docs.length; i++){
     var entry = data.docs[i];
 	var pathToks = entry.id.split("/");
@@ -349,7 +349,7 @@ _createManipulatorBar = function() {
   network.blockConnectingEdgeSelection = false;
   network.forceAppendSelection = false;
   
-  // On initial load, this displays the correct toolbar? I forget...
+  // On initial load, this displays the correct toolbar
   var toolbar = document.getElementById("network-manipulationDiv");
   toolbar.style.display="block";
   var editModeDiv = document.getElementById("network-manipulation-editMode");
@@ -383,13 +383,15 @@ _createManipulatorBar = function() {
       "<span class='network-manipulationUI add' id='networkAddNode' title='Add Node'></span>" +
 	  "<div class='network-seperatorLine'></div>" +
       "<span class='network-manipulationUI connect' id='networkConnectNode' title='Connect Node'></span>";
-    
+   
+	/*
 	if (network._getSelectedNodeCount() > 1) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
         "<span class='network-manipulationUI group' id='networkGroupNodes' title='Group Nodes'></span>";
     }
-	else if (network._getSelectedNodeCount() == 1) {
+	*/
+	if (network._getSelectedNodeCount() == 1) {
       network.manipulationDiv.innerHTML += "" +
         "<div class='network-seperatorLine'></div>" +
         "<span class='network-manipulationUI edit' id='networkEditNode' title='Edit Node'></span>";
@@ -425,7 +427,7 @@ _createManipulatorBar = function() {
 	  $('#loadFile').trigger('click');
 	  return false;
 	}
-	// TODO: sometimes causes problem when selects a second time
+	// sometimes causes problem when selects a second time...
     $('#loadFile').change(function () {
 		// When file is chosen from disk
 		uploadFile();
@@ -462,11 +464,12 @@ _createManipulatorBar = function() {
     var addEdgeButton = document.getElementById("networkConnectNode");
     addEdgeButton.onclick = createAddEdgeToolbar.bind(this);
     
+	/*
 	if (network._getSelectedNodeCount() > 1) {
       var groupButton = document.getElementById("networkGroupNodes");
       groupButton.onclick = createGroupNodesToolbar.bind(this);
-    }
-	else if (network._getSelectedNodeCount() == 1) {
+    } */
+	if (network._getSelectedNodeCount() == 1) {
       var editButton = document.getElementById("networkEditNode");
       editButton.onclick = editNode.bind(this);
     }
@@ -638,6 +641,7 @@ function onAdd(data, callback) {
   var linkInput = document.getElementById('nodeURL');
   var path = document.getElementById('nodePath');
   var colorInput = $('#nodeColor').spectrum('get');
+  var imageInput = document.getElementById('nodeImage');
 
   data.color = colorInput.toHexString();
   data.link = linkInput.value;
@@ -667,9 +671,10 @@ function onAdd(data, callback) {
   }
   else { // If there is an image to upload, get the image
 	var file = document.getElementById('loadImage').files[0];
-	var type = file.type.split("/");
-	if (!type[0].match('image')) {
-	  $('.ui-dialog-content').append("<p id='alert'>Flie is not an image.</p>");
+
+	// if no image selected
+	if (imageInput.value == "") {
+	  $('.ui-dialog-content').append("<p id='alert'>No file has been selected.</p>");
 	  var buttons = { 
 	    Ok: function() {
 		  clearPopup();
@@ -680,23 +685,42 @@ function onAdd(data, callback) {
 	  $('#filePopup').dialog("open");
 	  return;
 	}
+    // if a data image is selected, but hasn't been changed
+	else if (file === undefined && imageInput.value !== "") {
+	  callback(data);
+	}
+    else {	
+	  var type = file.type.split("/");
+	  if (!type[0].match('image')) {
+	    $('.ui-dialog-content').append("<p id='alert'>Flie is not an image.</p>");
+	    var buttons = { 
+	      Ok: function() {
+		    clearPopup();
+            $('#filePopup').dialog('close');
+	      },
+	    }
+	    $('#filePopup').dialog("option", "buttons", buttons);
+	    $('#filePopup').dialog("open");
+	    return;
+	  }
 
-	var form = new FormData();
-	form.append('img', file, file.name);
+	  var form = new FormData();
+	  form.append('img', file, file.name);
 
-	$.ajax({
-      url: '/upload/image',
-      type: 'POST',
-      data: form,
-      cache: false,
-      dataType: 'json',
-      processData: false,
-      contentType: false, 
-      success: function(res) {
-		data.image = res.imagePath;
-		callback(data);
-      },
-    });	
+	  $.ajax({
+        url: '/upload/image',
+        type: 'POST',
+        data: form,
+        cache: false,
+        dataType: 'json',
+        processData: false,
+        contentType: false, 
+        success: function(res) {
+		  data.image = res.imagePath;
+		  callback(data);
+        },
+      });	
+    }
   }
 }
 
@@ -827,7 +851,7 @@ function createEditNodeToolbar(data) {
 
   // Bind the back button
   var backButton = document.getElementById("networkBack");
-  backButton.onclick = network._createManipulatorBar.bind(this);
+  backButton.onclick = network._createManipulatorBar.bind(network);
 
   // Bind the save button
   var saveButton = document.getElementById("editNodeButton");
