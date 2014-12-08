@@ -897,6 +897,14 @@ function createAddEdgeToolbar() {
 	"<option value='arrow'>Arrow</option>" +
 	"<option value='arrow-center'>Arrow2</option>" +
 	"</select>" +
+	
+	"<select id='edgeWidth' class='toolbarSpacing'>" +
+	"<option value='1'>Width</option>" +
+	"<option value='1'>1</option>" +
+	"<option value='1.5'>1.5</option>" +
+	"<option value='2'>2</option>" +
+	"<option value='2.5'>2.5</option>" +
+	"</select>" +
     
     "<input type='text' id='edgeColor'/>" +
 
@@ -939,11 +947,14 @@ function createAddEdgeToolbar() {
 function onConnect(data, callback) {
   var labelInput = document.getElementById('edgeLabel');
   var typeInput = document.getElementById('edgeType');
+  var widthInput = document.getElementById('edgeWidth');
   var colorInput = $('#edgeColor').spectrum('get');
 	  
   data.label = labelInput.value;
   data.style = typeInput.value;
+  data.width = Number(widthInput.value);
   data.color = colorInput.toHexString();
+  //data.inheritColor = true;
 	  
   var title = "<table>" +
 			  "<tr><td><b>Edge ID:</b></td><td>"+data.id+"</td>" +
@@ -951,6 +962,7 @@ function onConnect(data, callback) {
 			  "<tr><td><b>Edge From:</b></td><td>"+data.from+"</td>" +
 			  "<tr><td><b>Edge Label:</b></td><td>"+data.label+"</td>" +
 			  "<tr><td><b>Edge Style:</b></td><td>"+data.style+"</td>" +
+			  "<tr><td><b>Edge Width:</b></td><td>"+data.width+"</td>" +
 			  "<tr><td><b>Edge Color:</b></td><td>"+data.color+"</td>" +
 			  "</table>";
   data.title = title;
@@ -1017,7 +1029,7 @@ function createEditEdgeToolbar() {
 
   // All the HTML for the toolbar goes here
   network.manipulationDiv.innerHTML = "" +
-    "<span class='network-manipulationUI back' id='network-manipulate-back' title='Back'></span>" +
+    "<span class='network-manipulationUI back' id='networkBack' title='Back'></span>" +
     "<div class='network-seperatorLine'></div>" +
     "<span class='network-manipulationUI none'>" +
 	
@@ -1030,6 +1042,15 @@ function createEditEdgeToolbar() {
 	"<option value='arrow'>Arrow</option>" +
 	"<option value='arrow-center'>Arrow2</option>" +
 	"</select>" +
+	
+	"<select id='edgeWidth' class='toolbarSpacing'>" +
+	"<option value='1'>1</option>" +
+	"<option value='1.5'>1.5</option>" +
+	"<option value='2'>2</option>" +
+	"<option value='2.5'>2.5</option>" +
+	"</select>" +
+    
+    "<input type='text' id='edgeColor'/>" +
     
 	"<input type='button' value='save' id='editEdgeButton' class='toolbarSpacing'></button>"+
 	
@@ -1037,12 +1058,22 @@ function createEditEdgeToolbar() {
 	network.constants.labels['editEdgeDescription'] + 
 	"</span></span>";
  
-  
-  document.getElementById('edgeLabel').value = network.edgeBeingEdited.label
-  $('#edgeType').val(network.edgeBeingEdited.options.style).change()
+  var edge =  network.edgeBeingEdited;
+  var options = edge.options;
+  console.log(network.edgeBeingEdited)
+
+  document.getElementById('edgeLabel').value = edge.label
+  $('#edgeType').val(options.style).change()
+  $('#edgeWidth').val(options.width).change()
    
   $('#label').on('click', function() {
 	$('#edgeLabel').toggle();
+  });
+  
+  $("#edgeColor").spectrum({
+    color: options.color.color,
+	preferredFormat: 'hex',
+	showInput: true
   });
 
   // Bind the save button
@@ -1062,7 +1093,7 @@ function createEditEdgeToolbar() {
   });
 
   // bind the icon
-  var backButton = document.getElementById("network-manipulate-back");
+  var backButton = document.getElementById("networkBack");
   backButton.onclick = network._createManipulatorBar.bind(network);
 
   // temporarily overload functions

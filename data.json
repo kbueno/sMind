@@ -266,12 +266,33 @@
         "edges": [
             {
                 "style": "line",
+                "from": 0,
+                "to": 2,
+                "id": 2,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>2</td><tr><td><b>Edge To:</b></td><td>2</td><tr><td><b>Edge From:</b></td><td>0</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
                 "from": 1,
                 "to": 3,
                 "id": 3,
                 "label": "",
+                "width": 1,
                 "color": "#45b5d6",
-                "title": "<table><tr><td><b>Edge ID:</b></td><td>3</td><tr><td><b>Edge To:</b></td><td>3</td><tr><td><b>Edge From:</b></td><td>1</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>3</td><tr><td><b>Edge To:</b></td><td>3</td><tr><td><b>Edge From:</b></td><td>1</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 2,
+                "to": 4,
+                "id": 4,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>4</td><tr><td><b>Edge To:</b></td><td>4</td><tr><td><b>Edge From:</b></td><td>2</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
             },
             {
                 "style": "line",
@@ -279,8 +300,19 @@
                 "to": 5,
                 "id": 5,
                 "label": "",
+                "width": 1,
                 "color": "#45b5d6",
-                "title": "<table><tr><td><b>Edge ID:</b></td><td>5</td><tr><td><b>Edge To:</b></td><td>5</td><tr><td><b>Edge From:</b></td><td>3</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>5</td><tr><td><b>Edge To:</b></td><td>5</td><tr><td><b>Edge From:</b></td><td>3</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 4,
+                "to": 6,
+                "id": 6,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>6</td><tr><td><b>Edge To:</b></td><td>6</td><tr><td><b>Edge From:</b></td><td>4</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
             },
             {
                 "style": "line",
@@ -288,8 +320,19 @@
                 "to": 7,
                 "id": 7,
                 "label": "",
+                "width": 1,
                 "color": "#45b5d6",
-                "title": "<table><tr><td><b>Edge ID:</b></td><td>7</td><tr><td><b>Edge To:</b></td><td>7</td><tr><td><b>Edge From:</b></td><td>5</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>7</td><tr><td><b>Edge To:</b></td><td>7</td><tr><td><b>Edge From:</b></td><td>5</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 6,
+                "to": 8,
+                "id": 8,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>8</td><tr><td><b>Edge To:</b></td><td>8</td><tr><td><b>Edge From:</b></td><td>6</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
             },
             {
                 "style": "line",
@@ -297,8 +340,99 @@
                 "to": 9,
                 "id": 9,
                 "label": "",
+                "width": 1,
                 "color": "#45b5d6",
-                "title": "<table><tr><td><b>Edge ID:</b></td><td>9</td><tr><td><b>Edge To:</b></td><td>9</td><tr><td><b>Edge From:</b></td><td>7</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>9</td><tr><td><b>Edge To:</b></td><td>9</td><tr><td><b>Edge From:</b></td><td>7</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 0,
+                "to": 1,
+                "id": 10,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>10</td><tr><td><b>Edge To:</b></td><td>1</td><tr><td><b>Edge From:</b></td><td>0</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 1,
+                "to": 2,
+                "id": 11,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>11</td><tr><td><b>Edge To:</b></td><td>2</td><tr><td><b>Edge From:</b></td><td>1</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 2,
+                "to": 3,
+                "id": 12,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>12</td><tr><td><b>Edge To:</b></td><td>3</td><tr><td><b>Edge From:</b></td><td>2</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 3,
+                "to": 4,
+                "id": 13,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>13</td><tr><td><b>Edge To:</b></td><td>4</td><tr><td><b>Edge From:</b></td><td>3</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 4,
+                "to": 5,
+                "id": 14,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>14</td><tr><td><b>Edge To:</b></td><td>5</td><tr><td><b>Edge From:</b></td><td>4</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 5,
+                "to": 6,
+                "id": 15,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>15</td><tr><td><b>Edge To:</b></td><td>6</td><tr><td><b>Edge From:</b></td><td>5</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 6,
+                "to": 7,
+                "id": 16,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>16</td><tr><td><b>Edge To:</b></td><td>7</td><tr><td><b>Edge From:</b></td><td>6</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 7,
+                "to": 8,
+                "id": 17,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>17</td><tr><td><b>Edge To:</b></td><td>8</td><tr><td><b>Edge From:</b></td><td>7</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
+            },
+            {
+                "style": "line",
+                "from": 8,
+                "to": 9,
+                "id": 18,
+                "label": "",
+                "width": 1,
+                "color": "#45b5d6",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>18</td><tr><td><b>Edge To:</b></td><td>9</td><tr><td><b>Edge From:</b></td><td>8</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
             }
         ]
     }
