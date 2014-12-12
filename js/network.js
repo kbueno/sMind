@@ -73,6 +73,7 @@ function draw(data) {
 	  console.log(node);
 	  
 	  if (node.path != "") {
+		console.log("OPEN PATH");
 	    window.open("/docs/"+node.path, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	  if (node.link != "") {
@@ -80,7 +81,8 @@ function draw(data) {
         if (node.link.indexOf('http://') == -1) {
 	      node.link = 'http://' + node.link;
         }
-		window.open(node.link, "_blank", "top=400, left=400, width=600, height=400, menubar=yes, toolbar=yes");
+	    console.log("OPEN LINK");
+		window.open(node.link, "_blank", "top=500, left=400, width=600, height=400, menubar=yes, toolbar=yes");
 	  }
 	}	
   });
@@ -648,11 +650,14 @@ function onAdd(data, callback) {
   data.shape = shapeInput.value;
   data.label = labelInput.value;
 	  
-  if (path !== null) {
-	data.path = path.getAttribute('pathName');
-  }
-  else {
-	data.path = "";
+  if (data.path == null) {
+	console.log("NO PATH");
+	if (path !== null) {
+		data.path = path.getAttribute('pathName');
+	}
+	else {
+		data.path = "";
+	}
   }
 
   var title = "<table>" +
