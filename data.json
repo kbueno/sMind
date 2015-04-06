@@ -285,5 +285,74 @@
                 "title": "<table><tr><td><b>Edge ID:</b></td><td>9</td><tr><td><b>Edge To:</b></td><td>9</td><tr><td><b>Edge From:</b></td><td>7</td><tr><td><b>Edge Label:</b></td><td></td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#45b5d6</td></table>"
             }
         ]
+    },
+    "tovah": {
+        "nodes": [
+            {
+                "id": "199d7a36-4f9a-16d-db7f-6484ef37dd",
+                "x": -337,
+                "y": -1,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#d3d645",
+                "link": "http://en.wikipedia.org/wiki/Banana",
+                "shape": "image",
+                "label": "Bolivia",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>199d7a36-4f9a-16d-db7f-6484ef37dd</td><tr><td><b>Node Label:</b></td><td>Bolivia</td><tr><td><b>Node Link:</b></td><td>http://en.wikipedia.org/wiki/Banana</td><tr><td><b>Node Shape:</b></td><td>image</td><tr><td><b>Node Color:</b></td><td>#d3d645</td><tr><td><b>Node Path:</b></td><td></td></table>",
+                "image": "img/bolivia flag map.png"
+            },
+            {
+                "id": "82089b47-ab28-1d73-3d4c-560235d9ae34",
+                "x": -416,
+                "y": -131,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#c9d1d4",
+                "link": "www.selinc.com",
+                "shape": "database",
+                "label": "Click Me",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>82089b47-ab28-1d73-3d4c-560235d9ae34</td><tr><td><b>Node Label:</b></td><td>Click Me</td><tr><td><b>Node Link:</b></td><td>www.selinc.com</td><tr><td><b>Node Shape:</b></td><td>database</td><tr><td><b>Node Color:</b></td><td>#c9d1d4</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            },
+            {
+                "id": "4e3dcff-76fb-efb9-4545-a4fc7acc494c",
+                "x": -113,
+                "y": -190,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#45b5d6",
+                "link": "",
+                "shape": "ellipse",
+                "label": "311C-2-3_IM_20140730.pdf",
+                "path": "/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/311C-2-3_IM_20140730.pdf",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>4e3dcff-76fb-efb9-4545-a4fc7acc494c</td><tr><td><b>Node Label:</b></td><td>311C-2-3_IM_20140730.pdf</td><tr><td><b>Node Link:</b></td><td></td><tr><td><b>Node Shape:</b></td><td>ellipse</td><tr><td><b>Node Color:</b></td><td>#45b5d6</td><tr><td><b>Node Path:</b></td><td>/home/kbueno/Code/sMind/libs/solr/Testing/TestDocs/311C-2-3_IM_20140730.pdf</td></table>"
+            },
+            {
+                "id": "d892c68b-40d-5b49-d6ca-81fda7c0f3fe",
+                "x": -351,
+                "y": -71,
+                "allowedToMoveX": true,
+                "allowedToMoveY": true,
+                "color": "#c6d645",
+                "link": "www.google.com",
+                "shape": "circle",
+                "label": "",
+                "path": "",
+                "title": "<table><tr><td><b>Node ID:</b></td><td>d892c68b-40d-5b49-d6ca-81fda7c0f3fe</td><tr><td><b>Node Label:</b></td><td></td><tr><td><b>Node Link:</b></td><td>www.google.com</td><tr><td><b>Node Shape:</b></td><td>circle</td><tr><td><b>Node Color:</b></td><td>#c6d645</td><tr><td><b>Node Path:</b></td><td></td></table>"
+            }
+        ],
+        "edges": [
+            {
+                "from": "199d7a36-4f9a-16d-db7f-6484ef37dd",
+                "to": "d892c68b-40d-5b49-d6ca-81fda7c0f3fe",
+                "label": "Hat",
+                "style": "line",
+                "width": 1,
+                "color": "#070707",
+                "title": "<table><tr><td><b>Edge ID:</b></td><td>9ba331ce-2c73-ca76-7d1a-d54d500e72c7</td><tr><td><b>Edge To:</b></td><td>d892c68b-40d-5b49-d6ca-81fda7c0f3fe</td><tr><td><b>Edge From:</b></td><td>199d7a36-4f9a-16d-db7f-6484ef37dd</td><tr><td><b>Edge Label:</b></td><td>Hat</td><tr><td><b>Edge Style:</b></td><td>line</td><tr><td><b>Edge Width:</b></td><td>1</td><tr><td><b>Edge Color:</b></td><td>#070707</td></table>",
+                "id": "9ba331ce-2c73-ca76-7d1a-d54d500e72c7"
+            }
+        ]
     }
 }
